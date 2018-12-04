@@ -1,0 +1,21 @@
+Architecture Project II Journal
+Yahia Khaled Farid
+
+December 2, 5:00pm:
+Met up with members to discuss the details of the project design.
+
+December 3, 4:00pm:
+Met again with members to divide the tasks of the first milestone.
+
+December 3, 3:30am:
+Added and edited instruction classes. These include instruction,
+inst1OP, inst2OP, inst3OP and a class for each instruction.
+Implemented functions to read instructions and data from a text file
+and store them in the corresponding memory.
+
+December 4, 7:43pm:
+Added extra validation for the inputs.
+Finalized functions for milestone 1.
+
+
+
