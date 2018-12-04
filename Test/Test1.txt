@@ -1,0 +1,16 @@
+.text
+ADDI x1,x0,8
+ADDI x2,x0,4
+ADDI x3,x0,-5
+ADD x4,x1,x2
+MUL x0,x2,x2
+SW x4,x0,11
+LW x5,x0,10
+LW x6,x0,11
+SUB x7,x5,x1
+NAND x4,x1,x2
+
+.data
+0x0:	20
+0x1:	45
+0xA:	22

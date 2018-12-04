@@ -1,0 +1,19 @@
+.text
+ADDI x1,x0,3
+BEQ x7,x1,7
+LW x2,x6,10
+LW x3,x6,13
+MUL x4,x2,x3
+SW x4,x6,16
+ADDI x6,x0,1
+ADDI x7,x0,1
+JMP -8
+ADDI x5,x0,5
+
+.data
+0xA:	10
+0xB:	20
+0xC:	30
+0xD:	2
+0xE:	4
+0xF:	6

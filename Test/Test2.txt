@@ -1,0 +1,14 @@
+.text
+ADDI x1,x0,22
+ADDI x2,x0,10
+ADDI x3,x0,7
+JALR x7,x3
+SUB x4,x1,x2
+NAND x5,x1,x2
+JMP 3
+ADDI x1,x0,30
+ADDI x2,x0,50
+RET x7
+ADDI x6,x0,1
+
+.data
