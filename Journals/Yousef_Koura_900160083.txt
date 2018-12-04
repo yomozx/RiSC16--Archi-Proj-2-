@@ -1,0 +1,19 @@
+/////////////////////////
+Journal - Yousef Koura
+/////////////////////////
+
+Sunday December 2nd ~5:00pm:
+Met up to discuss general design and decide on 
+what needs to be done for this milestone.
+Discussed the rest of the project loosely.
+
+Monday December 3rd ~4:30pm-6:30pm:
+Finalized MS1 design and split tasks.
+
+Tuesday December 4th 1:45pm-8:00pm:
+Worked on parsing for manual inputs.
+Edited design to include more validation
+and make things easier for the next milestone.
+Combined the pieces made by each member to make the
+full C++ project and run it.
+
