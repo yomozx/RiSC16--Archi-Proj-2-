@@ -17,3 +17,6 @@ and make things easier for the next milestone.
 Combined the pieces made by each member to make the
 full C++ project and run it.
 
+Tuesday December 4th 11:20pm:
+Collected everything in a directory. Read to submit.
+
