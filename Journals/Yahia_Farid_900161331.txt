@@ -17,5 +17,8 @@ December 4, 7:43pm:
 Added extra validation for the inputs.
 Finalized functions for milestone 1.
 
+December 4, 9:53pm:
+Wrote test cases that will be used for simulation.
+
 
 
