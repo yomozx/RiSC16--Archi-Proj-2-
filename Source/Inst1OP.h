@@ -10,7 +10,8 @@ public:
 	void set_instruction(string instruction, int last_read);
 	bool validate(string instruction, int last_read);
 	virtual void issue() = 0;
-	virtual void execute() = 0;
+	virtual bool execute() = 0;
 	virtual void writeback() = 0;
+	int get_operand1();
 };
 #endif

@@ -6,26 +6,51 @@ using namespace std;
 
 class JALR : public Inst2OP {
 private:
-	int address, parameter2;
+	int parameter2;
 public:
+	JALR();
 	void issue();
-	void execute();
+	bool execute();
 	void writeback();
+	void commit();
 };
+
+inline JALR::JALR() {
+	cycles = 1;
+	funcUnit = "JMP";
+}
 
 inline void JALR::issue()
 {
-	parameter2 = sim_ptr->rf_rd(operand2);
+	sim_ptr->fill_station(this);
+	sim_ptr->fill_regRenamed(this);
+	sim_ptr->fill_ROB(this);
+
+	// need to check regRenamed for this
+	//parameter2 = sim_ptr->rf_rd(operand2);
 }
 
-inline void JALR::execute()
+inline bool JALR::execute()
 {
-	address = sim_ptr->get_pc() + 1;
-	sim_ptr->set_pc(parameter2);
+	cycles--;
+
+	if (cycles == 0) {
+		result = sim_ptr->get_pc() + 1;
+		sim_ptr->set_pc(parameter2);
+		return true;
+	}
+	else
+		return false;
 }
 
 inline void JALR::writeback()
 {
-	sim_ptr->rf_wr(operand1, address);
+	ready = 1;
+	sim_ptr->edit_regRenamed(this);
+}
+
+inline void JALR::commit()
+{
+	sim_ptr->rf_wr(operand1, result);
 }
 #endif

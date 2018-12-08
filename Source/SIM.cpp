@@ -17,12 +17,10 @@
 #include "SW.h"
 using namespace std;
 
-SIM::SIM() : pc(0), last_read(0), data_memory(64 * 1024), registers(8), data_memCount(0) {}
+SIM::SIM() : pc(0), last_read(0), data_memory(64 * 1024), registers(8), data_memCount(0), 
+			 starting_address(0) {}
 
-SIM::~SIM() 
-{
-	
-}
+SIM::~SIM() {}
 
 void SIM::simulate() {
 	read_file();
@@ -188,11 +186,42 @@ int SIM::get_pc()
 void SIM::set_startingAddr(string address)
 {
 	last_read = toDec(address);
+	starting_address = toDec(address);
+}
+
+int SIM::get_startingAddr()
+{
+	return starting_address;
 }
 
 void SIM::displayMem()
 {
 	inst_memory.Display();
+}
+
+void SIM::fill_station(instruction * inst)
+{
+	// fill
+}
+
+void SIM::fill_regRenamed(instruction * inst)
+{
+	// fill
+}
+
+void SIM::edit_regRenamed(instruction * inst)
+{
+	// fill
+}
+
+void SIM::fill_ROB(instruction * inst)
+{
+	// fill
+}
+
+void SIM::fill_loadBuffer(instruction * inst)
+{
+	// fill
 }
 
 void SIM::read_instr()

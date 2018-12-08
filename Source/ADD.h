@@ -6,26 +6,53 @@ using namespace std;
 
 class ADD : public Inst3OP {
 private:
-	int parameter1, parameter2, result;
+	int parameter1, parameter2;
 public:
+	ADD();
 	void issue();
-	void execute();
+	bool execute();
 	void writeback();
+	void commit();
 };
+
+inline ADD::ADD() {
+	cycles = 2;
+	funcUnit = "ADD";
+}
 
 inline void ADD::issue()
 {
-	parameter1 = sim_ptr->rf_rd(operand2);
-	parameter2 = sim_ptr->rf_rd(operand3);
+	sim_ptr->fill_station(this);
+	sim_ptr->fill_regRenamed(this);
+	sim_ptr->fill_ROB(this);
+
+	// Need to check regRenamed first for these
+	//parameter1 = sim_ptr->rf_rd(operand2);
+	//parameter2 = sim_ptr->rf_rd(operand3);
 }
 
-inline void ADD::execute()
+inline bool ADD::execute()
 {
-	result = parameter1 + parameter2;
+		cycles--;
+
+	if (cycles == 0) {
+		result = parameter1 + parameter2;
+		return true;
+	}
+	else
+		return false;
+	
 }
 
 inline void ADD::writeback()
 {
+	ready = 1;
+	sim_ptr->edit_regRenamed(this);
+}
+
+inline void ADD::commit() 
+{
 	sim_ptr->rf_wr(operand1, result);
 }
+
 #endif

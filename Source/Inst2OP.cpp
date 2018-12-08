@@ -47,6 +47,21 @@ bool Inst2OP::validate(string instruction, int last_read)
 		return true;
 }
 
+int Inst2OP::get_result()
+{
+	return result;
+}
+
+int Inst2OP::get_operand1()
+{
+	return operand1;
+}
+
+int Inst2OP::get_operand2()
+{
+	return operand2;
+}
+
 void Inst2OP::set_instruction(string instruction, int last_read)
 {
 	whole_instruction = instruction;

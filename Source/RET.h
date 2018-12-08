@@ -8,23 +8,44 @@ class RET : public Inst1OP {
 private:
 	int return_address;
 public:
+	RET();
 	void issue();
-	void execute();
+	bool execute();
 	void writeback();
+	void commit();
 };
+
+inline RET::RET() {
+	cycles = 1;
+	funcUnit = "JMP";
+}
 
 inline void RET::issue()
 {
-	return_address = sim_ptr->rf_rd(operand1);
+	sim_ptr->fill_station(this);
+	sim_ptr->fill_regRenamed(this);
+	sim_ptr->fill_ROB(this);
+
+	// need to check regRenamed for this
+	//return_address = sim_ptr->rf_rd(operand1);
 }
 
-inline void RET::execute()
+inline bool RET::execute()
 {
-	sim_ptr->set_pc(return_address);
+	cycles--;
+
+	if (cycles == 0) {
+		sim_ptr->set_pc(return_address);
+		return true;
+	}
+	else
+		return false;
 }
 
-inline void RET::writeback()
+inline void RET::writeback() 
 {
-
+	ready = 1;
 }
+
+inline void RET::commit() {}
 #endif

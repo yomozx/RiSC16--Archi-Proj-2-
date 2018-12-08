@@ -6,25 +6,50 @@ using namespace std;
 
 class SUB : public Inst3OP {
 private:
-	int parameter1, parameter2, result;
+	int parameter1, parameter2;
 public:
+	SUB();
 	void issue();
-	void execute();
+	bool execute();
 	void writeback();
+	void commit();
 };
+
+inline SUB::SUB() {
+	cycles = 2;
+	funcUnit = "ADD";
+}
 
 inline void SUB::issue()
 {
-	parameter1 = sim_ptr->rf_rd(operand2);
-	parameter2 = sim_ptr->rf_rd(operand3);
+	sim_ptr->fill_station(this);
+	sim_ptr->fill_regRenamed(this);
+	sim_ptr->fill_ROB(this);
+
+	// need to check regRenamed for this
+	//parameter1 = sim_ptr->rf_rd(operand2);
+	//parameter2 = sim_ptr->rf_rd(operand3);
 }
 
-inline void SUB::execute()
+inline bool SUB::execute()
 {
-	result = parameter1 - parameter2;
+	cycles--;
+
+	if (cycles == 0) {
+		result = parameter1 - parameter2;
+		return true;
+	}
+	else
+		return false;
 }
 
 inline void SUB::writeback()
+{
+	ready = 1;
+	sim_ptr->edit_regRenamed(this);
+}
+
+inline void SUB::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 }

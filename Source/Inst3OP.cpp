@@ -69,6 +69,26 @@ bool Inst3OP::validate(string instruction, int last_read)
 		return true;
 }
 
+int Inst3OP::get_result()
+{
+	return result;
+}
+
+int Inst3OP::get_operand1()
+{
+	return operand1;
+}
+
+int Inst3OP::get_operand2()
+{
+	return operand2;
+}
+
+int Inst3OP::get_operand3()
+{
+	return operand3;
+}
+
 void Inst3OP::set_instruction(string instruction, int last_read)
 {
 	whole_instruction = instruction;
