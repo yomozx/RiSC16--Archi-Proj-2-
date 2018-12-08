@@ -1,6 +1,7 @@
 #ifndef SIM_H
 #define SIM_H
 #include "Memory.h"
+#include <queue>
 
 using namespace std;
 
@@ -12,9 +13,22 @@ private:
 	int last_read;
 	int data_memCount;
 	int starting_address;
+	bool stall = false;
 	memory<__int16> data_memory;
 	memory<__int16> registers;
+	memory<__int16*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
+	bool valid_bits[8]; //array of validity bits for RAT
 	memory<instruction*> inst_memory;
+	queue<instruction*> instq; //size is 4 instructions
+	queue<instruction*> ROB;   //size is 6 instructions
+	instruction* ADD_stations[3];
+	instruction* BEQ_stations[2];
+	instruction* LW_stations[2]; //load buffer
+	//instruction* SW_stations[2]; shouldn't need anymore since we have ROB
+	instruction* JMP_stations[3];
+	instruction* NAND_stations[1];
+	instruction* MUL_stations[2];
+
 
 public:
 	SIM();
@@ -34,6 +48,9 @@ public:
 	void set_startingAddr(string address);
 	int get_startingAddr();
 	void displayMem();
+
+	void RAT_validate(int addr);
+	void RAT_invalidate(int addr);
 
 	void fill_station(instruction* inst);
 	void fill_regRenamed(instruction* inst);

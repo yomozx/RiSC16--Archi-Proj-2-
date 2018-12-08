@@ -27,6 +27,10 @@ public:
 	virtual bool execute() = 0;
 	virtual void writeback() = 0;
 	virtual void commit() = 0;
+	virtual int get_result() = 0;
+	virtual int get_operand1() = 0;
+	virtual int get_operand2() = 0;
+	virtual int get_operand3() = 0;
 	string get_name();
 	string get_funcUnit();
 	void display() const;

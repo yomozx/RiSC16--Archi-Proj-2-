@@ -18,7 +18,7 @@
 using namespace std;
 
 SIM::SIM() : pc(0), last_read(0), data_memory(64 * 1024), registers(8), data_memCount(0), 
-			 starting_address(0) {}
+			 starting_address(0), RAT(8) {}
 
 SIM::~SIM() {}
 
@@ -199,6 +199,16 @@ int SIM::get_startingAddr()
 void SIM::displayMem()
 {
 	inst_memory.Display();
+}
+
+void SIM::RAT_validate(int addr)
+{
+	valid_bits[addr] = true;
+}
+
+void SIM::RAT_invalidate(int addr)
+{
+	valid_bits[addr] = false;
 }
 
 void SIM::fill_station(instruction * inst)
