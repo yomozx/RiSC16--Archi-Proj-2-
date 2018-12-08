@@ -52,8 +52,19 @@ void SIM::simulate() {
         //Commit
         if (!ROB.empty()) {
             while (!ROB.empty() && ROB.front()->isReady()) {
-                ROB.front()->commit();
-                ROB.pop();
+                if (!(ROB.front()->get_name() == "BEQ")) { // if not branch
+                    ROB.front()->commit();
+                    ROB.pop();
+                } else { // if it's a branch
+                    if (!ROB.front()->get_result()) { // if we mispredicted
+                        ROB.front()->commit();
+                        while (!ROB.empty())
+                            ROB.pop();
+                    } else { //if it was correctly predicted
+                        ROB.front()->commit();
+                        ROB.pop();
+                    }
+                }
             }
         }
 
@@ -112,7 +123,7 @@ void SIM::simulate() {
 
         //Issue
         if (!instq.empty()) {
-            if (!are_busy(instq.front()->get_funcUnit())) //if we have structural hazard
+            if (are_busy(instq.front()->get_funcUnit())) //if we have structural hazard
                 stall = true;
             else {
                 ins1 = instq.front();
@@ -136,11 +147,11 @@ void SIM::simulate() {
 
 
         //Fetch
-        if (instq.size() == 4) //checking for capacity
+        if (instq.size() == 4 || ROB.size() == 6) //checking for capacity
             stall = true;
         else instq.push(inst_memory.readData(pc));
 
-        if (instq.size() == 4) {//checking for capacity after first issue
+        if (instq.size() == 4 || ROB.size() == 5) { //checking for capacity after first issue
             stall = true;
             pc++; //because we are stalling, we need to account for instruction that has already been pushed
         } else instq.push(inst_memory.readData(pc));
@@ -371,7 +382,8 @@ bool SIM::dependent(instruction *one, instruction *two) {
         case 3:
             if (one->get_operand1() == two->get_operand2() ||
                 (one->get_operand1() == two->get_operand3()) && (two->get_name() != "LW" || two->get_name() != "SW"
-                                                                 || two->get_name() != "ADDI" || two->get_name() != "BEQ"))
+                                                                 || two->get_name() != "ADDI" ||
+                                                                 two->get_name() != "BEQ"))
                 return true;
             break;
     }

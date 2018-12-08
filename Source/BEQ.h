@@ -13,6 +13,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
+
 };
 
 inline BEQ::BEQ() {
