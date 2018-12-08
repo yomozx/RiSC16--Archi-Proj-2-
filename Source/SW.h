@@ -23,7 +23,7 @@ inline SW::SW() {
 inline void SW::issue()
 {
 	sim_ptr->fill_station(this);
-	sim_ptr->fill_regRenamed(this);
+    sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
 	// need to check regRenamed for this

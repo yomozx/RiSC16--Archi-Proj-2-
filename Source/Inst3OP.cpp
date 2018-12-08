@@ -125,3 +125,7 @@ void Inst3OP::set_instruction(string instruction, int last_read)
 	else
 		throw invalid_argument("instruction at index " + to_string(last_read) + " is not written in the correct format.");
 }
+
+int Inst3OP::number_operands() {
+	return 3;
+}

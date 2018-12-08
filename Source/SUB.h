@@ -23,7 +23,7 @@ inline SUB::SUB() {
 inline void SUB::issue()
 {
 	sim_ptr->fill_station(this);
-	sim_ptr->fill_regRenamed(this);
+    sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
 	// need to check regRenamed for this
@@ -46,7 +46,7 @@ inline bool SUB::execute()
 inline void SUB::writeback()
 {
 	ready = 1;
-	sim_ptr->edit_regRenamed(this);
+	sim_ptr->edit_RAT(this);
 }
 
 inline void SUB::commit()

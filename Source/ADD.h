@@ -23,7 +23,7 @@ inline ADD::ADD() {
 inline void ADD::issue()
 {
 	sim_ptr->fill_station(this);
-	sim_ptr->fill_regRenamed(this);
+    sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
 	// Need to check regRenamed first for these
@@ -47,7 +47,7 @@ inline bool ADD::execute()
 inline void ADD::writeback()
 {
 	ready = 1;
-	sim_ptr->edit_regRenamed(this);
+	sim_ptr->edit_RAT(this);
 }
 
 inline void ADD::commit() 

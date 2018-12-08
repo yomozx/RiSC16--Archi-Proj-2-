@@ -24,7 +24,7 @@ inline ADDI::ADDI() {
 inline void ADDI::issue()
 {
 	sim_ptr->fill_station(this);
-	sim_ptr->fill_regRenamed(this);
+    sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
 	// need to check regRenamed for this
@@ -48,7 +48,7 @@ inline bool ADDI::execute()
 inline void ADDI::writeback()
 {
 	ready = 1;
-	sim_ptr->edit_regRenamed(this);
+	sim_ptr->edit_RAT(this);
 }
 
 inline void ADDI::commit() 

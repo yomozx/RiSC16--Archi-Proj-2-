@@ -13,5 +13,6 @@ public:
 	virtual bool execute() = 0;
 	virtual void writeback() = 0;
 	int get_operand1();
+	int number_operands();
 };
 #endif

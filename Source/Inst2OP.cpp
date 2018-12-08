@@ -89,3 +89,8 @@ void Inst2OP::set_instruction(string instruction, int last_read)
 		throw invalid_argument("instruction at index " + to_string(last_read) + " is not written in the correct format.");
 
 }
+
+
+int Inst2OP::number_operands() {
+	return 2;
+}

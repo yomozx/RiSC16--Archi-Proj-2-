@@ -18,5 +18,6 @@ public:
 	int get_operand1();
 	int get_operand2();
 	int get_operand3();
+	int number_operands();
 };
 #endif

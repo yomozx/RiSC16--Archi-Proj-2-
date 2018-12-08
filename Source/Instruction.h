@@ -7,7 +7,7 @@ class SIM;
 
 class instruction {
 protected:
-	
+
 	string instruction_name;
 	string whole_instruction;
 	int operand1;
@@ -17,7 +17,7 @@ protected:
 	bool ready;
 	string funcUnit;
 	static SIM *sim_ptr;
-	
+
 public:
 	instruction();
 	~instruction();
@@ -31,6 +31,7 @@ public:
 	virtual int get_operand1() = 0;
 	virtual int get_operand2() = 0;
 	virtual int get_operand3() = 0;
+	virtual int number_operands() = 0; //gets number of operands
 	string get_name();
 	string get_funcUnit();
 	void display() const;

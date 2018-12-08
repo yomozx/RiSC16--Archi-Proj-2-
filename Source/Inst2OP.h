@@ -18,6 +18,7 @@ class Inst2OP : public instruction
 		int get_result();
 		int get_operand1();
 		int get_operand2();
+		int number_operands();
 };
 
 

@@ -13,10 +13,11 @@ private:
 	int last_read;
 	int data_memCount;
 	int starting_address;
+	int num_cycles;
 	bool stall = false;
-	memory<__int16> data_memory;
-	memory<__int16> registers;
-	memory<__int16*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
+	memory<int> data_memory;
+	memory<int> registers;
+	memory<instruction*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
 	bool valid_bits[8]; //array of validity bits for RAT
 	memory<instruction*> inst_memory;
 	queue<instruction*> instq; //size is 4 instructions
@@ -24,7 +25,7 @@ private:
 	instruction* ADD_stations[3];
 	instruction* BEQ_stations[2];
 	instruction* LW_stations[2]; //load buffer
-	//instruction* SW_stations[2]; shouldn't need anymore since we have ROB
+	instruction* SW_stations[2];
 	instruction* JMP_stations[3];
 	instruction* NAND_stations[1];
 	instruction* MUL_stations[2];
@@ -48,13 +49,16 @@ public:
 	void set_startingAddr(string address);
 	int get_startingAddr();
 	void displayMem();
+	bool are_busy(string); //returns if all unit are busy
+	bool dependent(instruction*, instruction*); //checks if 1st instruction's rd is used in second instruction
+    bool valid (instruction *); //checks if all operand of instruction is valid
 
 	void RAT_validate(int addr);
 	void RAT_invalidate(int addr);
 
 	void fill_station(instruction* inst);
-	void fill_regRenamed(instruction* inst);
-	void edit_regRenamed(instruction* inst);
+	void fill_RAT(instruction *inst);
+	void edit_RAT(instruction *inst);
 	void fill_ROB(instruction* inst);
 	void fill_loadBuffer(instruction* inst);
 };

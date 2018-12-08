@@ -23,7 +23,7 @@ inline LW::LW() {
 inline void LW::issue() 
 {
 	sim_ptr->fill_station(this);
-	sim_ptr->fill_regRenamed(this);
+	sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 	sim_ptr->fill_loadBuffer(this);
 
@@ -48,7 +48,7 @@ inline bool LW::execute()
 inline void LW::writeback()
 {
 	ready = 1;
-	sim_ptr->edit_regRenamed(this);
+	sim_ptr->edit_RAT(this);
 }
 
 inline void LW::commit()
