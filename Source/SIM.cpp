@@ -185,6 +185,8 @@ int SIM::get_pc()
 
 void SIM::set_startingAddr(string address)
 {
+	if (toDec(address) < 0 || toDec(address) >= (64 * 1024))
+		throw invalid_argument("Starting Address is not within memory range.");
 	last_read = toDec(address);
 	starting_address = toDec(address);
 }
