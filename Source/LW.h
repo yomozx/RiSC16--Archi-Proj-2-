@@ -41,7 +41,7 @@ inline void LW::issue()
 
 inline bool LW::execute()
 {
-	if (sim_ptr->CheckSWBuff(address))
+	if (sim_ptr->CheckSWBuff(address, ID))
 		cycles--;
 
 	if (cycles == 0) {

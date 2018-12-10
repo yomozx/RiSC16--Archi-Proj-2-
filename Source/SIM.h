@@ -63,7 +63,7 @@ public:
 	void fill_ROB(instruction* inst);
 	void fill_loadBuffer(instruction* inst);
 
-	bool CheckSWBuff(int address);
+	bool CheckSWBuff(int address, int id);
 
 };
 

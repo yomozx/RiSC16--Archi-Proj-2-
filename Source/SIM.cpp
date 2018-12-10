@@ -538,10 +538,10 @@ void SIM::fill_loadBuffer(instruction *inst) {
     // fill
 }
 
-bool SIM::CheckSWBuff(int address)
+bool SIM::CheckSWBuff(int address, int id)
 {
 	for (int i = 0; i < 2; i++)
-		if (SW_stations[i]->get_result() == address)
+		if (SW_stations[i]->get_result() == address && SW_stations[i]->get_ID() < id)
 			return false;
 	return true;
 }
