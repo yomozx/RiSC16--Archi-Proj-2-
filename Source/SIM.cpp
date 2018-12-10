@@ -209,6 +209,7 @@ void SIM::read_file() {
     int address = 0;
     stringstream stream;
     string temp = "";
+	int ID = 0;
 
     if (!file1.fail())
         while (!file1.eof()) {
@@ -257,6 +258,8 @@ void SIM::read_file() {
                         throw invalid_argument(
                                 "instruction at index " + to_string(last_read) + " name is not supported.");
                     inst->set_instruction(ReadLine, last_read);
+					inst->set_ID(ID);
+					ID++;
                     last_read += 1;
                 }
             }
@@ -506,7 +509,7 @@ void SIM::fill_station(instruction *inst) {
             }
     }
 
-    throw invalid_argument("Error! No reservation is free.");
+    throw invalid_argument("Error! No reservation station is free.");
 }
 
 void SIM::fill_RAT(instruction *inst) {
@@ -533,6 +536,14 @@ void SIM::fill_ROB(instruction *inst) {
 
 void SIM::fill_loadBuffer(instruction *inst) {
     // fill
+}
+
+bool SIM::CheckSWBuff(int address)
+{
+	for (int i = 0; i < 2; i++)
+		if (SW_stations[i]->get_result() == address)
+			return false;
+	return true;
 }
 
 /*

@@ -6,7 +6,11 @@ using namespace std;
 
 class SW : public Inst3OP {
 private:
-	int address, data;
+	int address;
+	int parameter1, parameter2;
+	instruction* p1;
+	instruction* p2;
+	bool valid[2];
 public:
 	SW();
 	void issue();
@@ -18,19 +22,26 @@ public:
 inline SW::SW() {
 	cycles = 2;
 	funcUnit = "SW";
+	valid[0] = valid[1] = true;
 }
 
 inline void SW::issue()
 {
+	if (sim_ptr->get_RAT(operand1) == nullptr) parameter1 = sim_ptr->rf_rd(operand1);
+	else
+		parameter1 = sim_ptr->get_RAT(operand1)->get_result();
+	
+	if (sim_ptr->get_RAT(operand2) == nullptr) parameter2 = sim_ptr->rf_rd(operand2);
+	else
+		parameter2 = sim_ptr->get_RAT(operand2)->get_result();
+	
+	address = operand3 + parameter2;
+	result = address;
+
 	sim_ptr->fill_station(this);
     sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
-	address = operand3 + sim_ptr->rf_rd(operand2);
-	result = address;
-
-	// need to check regRenamed for this
-	//data = sim_ptr->rf_rd(operand1);
 }
 
 inline bool SW::execute()
@@ -51,6 +62,6 @@ inline void SW::writeback()
 
 inline void SW::commit() 
 {
-	sim_ptr->datamem_wr(address, data);
+	sim_ptr->datamem_wr(address, parameter1);
 }
 #endif

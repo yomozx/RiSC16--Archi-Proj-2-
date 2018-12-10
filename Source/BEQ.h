@@ -7,6 +7,9 @@ using namespace std;
 class BEQ : public Inst3OP {
 private:
 	int parameter1, parameter2, address, oldPC;
+	instruction* p1;
+	instruction* p2;
+	bool valid[2];
 	bool taken;
 public:
 	BEQ();
@@ -20,10 +23,33 @@ public:
 inline BEQ::BEQ() {
 	cycles = 1;
 	funcUnit = "BEQ";
+	valid[0] = valid[1] = true;
 }
 
 inline void BEQ::issue()
 {
+	if (sim_ptr->get_RAT(operand1) == nullptr) parameter1 = sim_ptr->rf_rd(operand1);
+	else
+	{
+		if (sim_ptr->get_RAT(operand1)->isReady()) parameter1 = sim_ptr->get_RAT(operand1)->get_result();
+		else
+		{
+			valid[0] = false;
+			p1 = sim_ptr->get_RAT(operand1);
+		}
+	}
+
+	if (sim_ptr->get_RAT(operand2) == nullptr) parameter2 = sim_ptr->rf_rd(operand2);
+	else
+	{
+		if (sim_ptr->get_RAT(operand2)->isReady()) parameter2 = sim_ptr->get_RAT(operand2)->get_result();
+		else
+		{
+			valid[0] = false;
+			p2 = sim_ptr->get_RAT(operand2);
+		}
+	}
+
 	sim_ptr->fill_station(this);
     sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
@@ -40,13 +66,13 @@ inline void BEQ::issue()
 
 	oldPC = sim_ptr->get_pc() + 1;
 
-	// need to check regRenamed for this
-	//parameter1 = sim_ptr->rf_rd(operand1);
-	//parameter2 = sim_ptr->rf_rd(operand2);
 }
 
 inline bool BEQ::execute()
 {
+	if (!valid[0]) parameter1 = p1->get_result();
+	if (!valid[1]) parameter2 = p2->get_result();
+
 	cycles--;
 
 	if (cycles == 0) {

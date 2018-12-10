@@ -11,6 +11,7 @@ protected:
 	string instruction_name;
 	string whole_instruction;
 	int operand1;
+	int ID;
 	int operand2;
 	int operand3;
 	int cycles;
@@ -33,6 +34,8 @@ public:
 	virtual int get_operand3() = 0;
 	virtual int number_operands() = 0; //gets number of operands
 	string get_name();
+	int get_ID();
+	void set_ID(int);
 	string get_funcUnit();
 	void display() const;
 	bool isReady();
