@@ -26,7 +26,7 @@ inline ADD::ADD() {
 
 inline void ADD::issue()
 {
-	if (sim_ptr->get_RAT(operand2) == nullptr) parameter2 = sim_ptr->rf_rd(operand2);
+	if (sim_ptr->get_RAT(operand2) == nullptr) parameter1 = sim_ptr->rf_rd(operand2);
 	else
 	{
 		if(sim_ptr->get_RAT(operand2)->isReady()) parameter1 = sim_ptr->get_RAT(operand2)->get_result();
