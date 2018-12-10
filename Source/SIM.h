@@ -58,9 +58,11 @@ public:
 
 	void fill_station(instruction* inst);
 	void fill_RAT(instruction *inst);
-	void edit_RAT(instruction *inst);
+	instruction* get_RAT(int addr);
+	void set_RAT(int addr, instruction*);
 	void fill_ROB(instruction* inst);
 	void fill_loadBuffer(instruction* inst);
+
 };
 
 #endif

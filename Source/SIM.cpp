@@ -42,157 +42,160 @@ SIM::~SIM() {}
 
 void SIM::simulate() {
 
-    pc = starting_address;
-    num_cycles = 0;
-    instruction *ins1, *ins2;
-    bool loadstore = false;
+	pc = starting_address;
+	num_cycles = 0;
+	instruction *ins1, *ins2;
+	bool loadstore = false;
 
 
-    while (pc <= starting_address + last_read) {
+	while (pc <= starting_address + last_read) {
 
-        //Commit
-        if (!ROB.empty()) {
-            while (!ROB.empty() && ROB.front()->isReady()) {
-                if (!(ROB.front()->get_name() == "BEQ")) { // if not branch
-                    ROB.front()->commit();
-                    ROB.pop();
-                }
-                else { // if it's a branch
-                    if (!ROB.front()->get_result()) { // if we mispredicted
-                        ROB.front()->commit();
-                        while (!ROB.empty())
-                            ROB.pop();
-                    }
-                    else {
+		//Commit
+		if (!ROB.empty()) {
+			while (!ROB.empty() && ROB.front()->isReady()) {
+				if (!(ROB.front()->get_name() == "BEQ")) { // if not branch
+					ROB.front()->commit();
+					ROB.pop();
+				}
+				else { // if it's a branch
+					if (!ROB.front()->get_result()) { // if we mispredicted
+						ROB.front()->commit();
+						while (!ROB.empty())
+							ROB.pop();
+					}
+					else {//if it was correctly predicted
+						ROB.front()->commit();
+						ROB.pop();
+					}
+				}
+			}
+		}
 
-                    }
-                }
-            }
-        }
+		//Execute & Writeback
+		for (instruction *element : ADD_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
 
-        //Execute & Writeback
-        for (instruction *element: ADD_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-
-        for (instruction *element: BEQ_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-        for (instruction *element: LW_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-        for (instruction *element: SW_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-        for (instruction *element: JMP_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-        for (instruction *element: NAND_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-        for (instruction *element: MUL_stations)
-            if (element != nullptr)
-                if (valid(element))
-                    if (element->execute()) {
-                        element->writeback();
-                        element = nullptr; //freeing up the station
-                    }
-
-
-        //Issue
-        if (!instq.empty()) { //checking first instruction
-            if (instq.front()->get_name() == "LW") //going to check load buffers
-                for (instruction * element: LW_stations)
-                    if (instq.front()->get_result() == element->get_result())
-                        loadstore = true;
-            if (instq.front()->get_name() == "SW") {//going to check store buffers
-                for (instruction * element: LW_stations)
-                    if (instq.front()->get_result() == element->get_result())
-                        loadstore = true;
-                for (instruction * element: SW_stations)
-                    if (instq.front()->get_result() == element->get_result())
-                        loadstore = true;
-            }
+		for (instruction *element : BEQ_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
+		for (instruction *element : LW_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
+		for (instruction *element : SW_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
+		for (instruction *element : JMP_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
+		for (instruction *element : NAND_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
+		for (instruction *element : MUL_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
+					}
 
 
-            if (are_busy(instq.front()->get_funcUnit()) || loadstore) //if we have structural hazard
-                stall = true;
-            else {
-                ins1 = instq.front();
-                instq.pop();
-            }
-        }
-        if (!instq.empty()) { // checking second instruction
-            if (instq.front()->get_name() == "LW") //going to check load buffers
-                for (instruction * element: LW_stations)
-                    if (instq.front()->get_result() == element->get_result())
-                        loadstore = true;
-            if (instq.front()->get_name() == "SW") { //going to check store buffers
-                for (instruction * element: LW_stations)
-                    if (instq.front()->get_result() == element->get_result())
-                        loadstore = true;
-                for (instruction * element: SW_stations)
-                    if (instq.front()->get_result() == element->get_result())
-                        loadstore = true;
-            }
-
-            if (!are_busy(instq.front()->get_funcUnit()) && !stall || loadstore ) //if we have structural hazard or load/store hazard
-                stall = true;
-            else {
-                if (dependent(ins1, instq.front())) { //we only issue one instruction
-                    ins1->issue();
-                } else { //issuing two instructions
-                    ins2 = instq.front();
-                    instq.pop();
-                    ins1->issue();
-                    ins2->issue();
-                }
-            }
-        }
+		//Issue
+		if (!instq.empty()) { //checking first instruction
+			if (instq.front()->get_name() == "LW") //going to check load buffers
+				for (instruction * element : LW_stations)
+					if (instq.front()->get_result() == element->get_result())
+						loadstore = true;
+			if (instq.front()->get_name() == "SW") {//going to check store buffers
+				for (instruction * element : LW_stations)
+					if (instq.front()->get_result() == element->get_result())
+						loadstore = true;
+				for (instruction * element : SW_stations)
+					if (instq.front()->get_result() == element->get_result())
+						loadstore = true;
+			}
 
 
-        //Fetch
-        if (instq.size() == 4 || ROB.size() == 6) //checking for capacity
-            stall = true;
-        else instq.push(inst_memory.readData(pc));
+			if (are_busy(instq.front()->get_funcUnit()) || loadstore || ROB.size() == 6) //if we have structural hazard
+				stall = true;
+			else {
+				ins1 = instq.front();
+				instq.pop();
+			}
+		}
+		if (!instq.empty()) { // checking second instruction
+			if (instq.front()->get_name() == "LW") //going to check load buffers
+				for (instruction * element : LW_stations)
+					if (instq.front()->get_result() == element->get_result())
+						loadstore = true;
+			if (instq.front()->get_name() == "SW") { //going to check store buffers
+				for (instruction * element : LW_stations)
+					if (instq.front()->get_result() == element->get_result())
+						loadstore = true;
+				for (instruction * element : SW_stations)
+					if (instq.front()->get_result() == element->get_result())
+						loadstore = true;
+			}
 
-        if (instq.size() == 4 || ROB.size() == 5) { //checking for capacity after first issue
-            stall = true;
-            pc++; //because we are stalling, we need to account for instruction that has already been pushed
-        } else instq.push(inst_memory.readData(pc));
+			if (!are_busy(instq.front()->get_funcUnit()) && !stall || loadstore || ROB.size() == 6) //if we have structural hazard or load/store hazard
+				stall = true;
+			else {
+				if (dependent(ins1, instq.front())) { //we only issue one instruction
+					ins1->issue();
+				}
+				else { //issuing two instructions
+					ins2 = instq.front();
+					instq.pop();
+					ins1->issue();
+					ins2->issue();
+				}
+			}
+		}
 
 
-        pc = stall ? pc : pc + 2;
-        num_cycles++;
-        stall = false; //resetting the value
-    }
+		//Fetch
+		if (instq.size() == 4) //checking for capacity
+			stall = true;
+		else instq.push(inst_memory.readData(pc));
+
+		if (instq.size() == 4) { //checking for capacity after first issue
+			stall = true;
+			pc++; //because we are stalling, we need to account for instruction that has already been pushed
+		}
+		else instq.push(inst_memory.readData(pc));
 
 
-    cout << "Program finished executing instructions" << endl;
+		pc = stall ? pc : pc + 2;
+		num_cycles++;
+		stall = false; //resetting the value
+	}
+
+
+	cout << "Program finished executing instructions" << endl;
 }
 
 void SIM::read_file() {
@@ -423,10 +426,13 @@ bool SIM::dependent(instruction *one, instruction *two) {
 bool SIM::valid(instruction *inst) {
 
     if (inst->number_operands() == 1)
-        return true;
+	    if (inst->get_name == "JMP" || RAT.readData(inst->get_operand1()) == nullptr || RAT.readData(inst->get_operand1())->isReady()) 
+			return true;
+
     if (inst->number_operands() == 2)
         if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady())
             return true;
+
     if (inst->number_operands() == 3)
         if ((RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3()) == nullptr) ||
             RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3())->isReady())
@@ -510,6 +516,16 @@ void SIM::fill_RAT(instruction *inst) {
 
 }
 
+instruction* SIM::get_RAT(int addr)
+{
+	return RAT.readData(addr);
+}
+
+void SIM::set_RAT(int addr, instruction *inst)
+{
+	RAT.storeData(addr, inst);
+}
+
 
 void SIM::fill_ROB(instruction *inst) {
     ROB.push(inst);
@@ -518,6 +534,22 @@ void SIM::fill_ROB(instruction *inst) {
 void SIM::fill_loadBuffer(instruction *inst) {
     // fill
 }
+
+/*
+void SIM::reacquire_params(instruction *inst)
+{
+	if (inst->number_operands() == 1 && inst->get_name == "RET")
+		if (RAT.readData(inst->get_operand1()) == nullptr) 
+		else if (RAT.readData(inst->get_operand1())->isReady())
+
+	if (inst->number_operands() == 2)
+		if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady())
+
+	if (inst->number_operands() == 3)
+		if ((RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3()) == nullptr) ||
+			RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3())->isReady())
+}
+*/
 
 void SIM::read_instr() {
     bool done = false;
