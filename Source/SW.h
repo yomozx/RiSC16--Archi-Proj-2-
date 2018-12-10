@@ -26,6 +26,9 @@ inline void SW::issue()
     sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
+	address = operand3 + sim_ptr->rf_rd(operand2);
+	result = address;
+
 	// need to check regRenamed for this
 	//data = sim_ptr->rf_rd(operand1);
 }
@@ -35,8 +38,6 @@ inline bool SW::execute()
 	cycles--;
 
 	if (cycles == 0) {
-		address = operand3 + sim_ptr->rf_rd(operand2);
-		sim_ptr->datamem_wr(address, data);
 		return true;
 	}
 	else
@@ -48,5 +49,8 @@ inline void SW::writeback()
 	ready = 1;
 }
 
-inline void SW::commit() {}
+inline void SW::commit() 
+{
+	sim_ptr->datamem_wr(address, data);
+}
 #endif

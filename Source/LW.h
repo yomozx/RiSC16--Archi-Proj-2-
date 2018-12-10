@@ -6,7 +6,7 @@ using namespace std;
 
 class LW : public Inst3OP {
 private:
-	int parameter2, address, immediate;
+	int parameter2, address, immediate, word;
 public:
 	LW();
 	void issue();
@@ -27,6 +27,9 @@ inline void LW::issue()
 	sim_ptr->fill_ROB(this);
 	sim_ptr->fill_loadBuffer(this);
 
+	address = parameter2 + immediate;
+	result = address;
+
 	// need to check regRenamed for this
 	//parameter2 = sim_ptr->rf_rd(operand2);
 	immediate = operand3;
@@ -37,8 +40,7 @@ inline bool LW::execute()
 	cycles--;
 
 	if (cycles == 0) {
-		address = parameter2 + immediate;
-		result = sim_ptr->datamem_rd(address);
+		word = sim_ptr->datamem_rd(address);
 		return true;
 	}
 	else
@@ -53,6 +55,6 @@ inline void LW::writeback()
 
 inline void LW::commit()
 {
-	sim_ptr->rf_wr(operand1, result);
+	sim_ptr->rf_wr(operand1, word);
 }
 #endif

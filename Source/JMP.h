@@ -48,4 +48,5 @@ inline void JMP::writeback()
 }
 
 inline void JMP::commit() {}
+
 #endif

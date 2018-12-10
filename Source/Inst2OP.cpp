@@ -62,6 +62,11 @@ int Inst2OP::get_operand2()
 	return operand2;
 }
 
+int Inst2OP::get_operand3()
+{
+	return operand3;
+}
+
 void Inst2OP::set_instruction(string instruction, int last_read)
 {
 	whole_instruction = instruction;

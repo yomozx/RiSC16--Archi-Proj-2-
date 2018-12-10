@@ -47,6 +47,21 @@ int Inst1OP::get_operand1()
 	return operand1;
 }
 
+int Inst1OP::get_result()
+{
+	return -1;
+}
+
+int Inst1OP::get_operand2()
+{
+	return operand2;
+}
+
+int Inst1OP::get_operand3()
+{
+	return operand3;
+}
+
 void Inst1OP::set_instruction(string instruction, int last_read)
 {
 	whole_instruction = instruction;
