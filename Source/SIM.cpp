@@ -45,6 +45,7 @@ void SIM::simulate() {
     pc = starting_address;
     num_cycles = 0;
     instruction *ins1, *ins2;
+    bool loadstore = false;
 
 
     while (pc <= starting_address + last_read) {
@@ -55,14 +56,15 @@ void SIM::simulate() {
                 if (!(ROB.front()->get_name() == "BEQ")) { // if not branch
                     ROB.front()->commit();
                     ROB.pop();
-                } else { // if it's a branch
+                }
+                else { // if it's a branch
                     if (!ROB.front()->get_result()) { // if we mispredicted
                         ROB.front()->commit();
                         while (!ROB.empty())
                             ROB.pop();
-                    } else { //if it was correctly predicted
-                        ROB.front()->commit();
-                        ROB.pop();
+                    }
+                    else {
+
                     }
                 }
             }
@@ -122,16 +124,43 @@ void SIM::simulate() {
 
 
         //Issue
-        if (!instq.empty()) {
-            if (are_busy(instq.front()->get_funcUnit())) //if we have structural hazard
+        if (!instq.empty()) { //checking first instruction
+            if (instq.front()->get_name() == "LW") //going to check load buffers
+                for (instruction * element: LW_stations)
+                    if (instq.front()->get_result() == element->get_result())
+                        loadstore = true;
+            if (instq.front()->get_name() == "SW") {//going to check store buffers
+                for (instruction * element: LW_stations)
+                    if (instq.front()->get_result() == element->get_result())
+                        loadstore = true;
+                for (instruction * element: SW_stations)
+                    if (instq.front()->get_result() == element->get_result())
+                        loadstore = true;
+            }
+
+
+            if (are_busy(instq.front()->get_funcUnit()) || loadstore) //if we have structural hazard
                 stall = true;
             else {
                 ins1 = instq.front();
                 instq.pop();
             }
         }
-        if (!instq.empty()) {
-            if (!are_busy(instq.front()->get_funcUnit()) && !stall) //if we have structural hazard
+        if (!instq.empty()) { // checking second instruction
+            if (instq.front()->get_name() == "LW") //going to check load buffers
+                for (instruction * element: LW_stations)
+                    if (instq.front()->get_result() == element->get_result())
+                        loadstore = true;
+            if (instq.front()->get_name() == "SW") { //going to check store buffers
+                for (instruction * element: LW_stations)
+                    if (instq.front()->get_result() == element->get_result())
+                        loadstore = true;
+                for (instruction * element: SW_stations)
+                    if (instq.front()->get_result() == element->get_result())
+                        loadstore = true;
+            }
+
+            if (!are_busy(instq.front()->get_funcUnit()) && !stall || loadstore ) //if we have structural hazard or load/store hazard
                 stall = true;
             else {
                 if (dependent(ins1, instq.front())) { //we only issue one instruction
