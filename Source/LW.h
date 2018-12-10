@@ -15,6 +15,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
+	virtual bool ops_ready() {return true;};
 };
 
 inline LW::LW() {
@@ -30,7 +31,7 @@ inline void LW::issue()
 		parameter1 = sim_ptr->get_RAT(operand2)->get_result();
 	
 	address = parameter1 + immediate;
-	result = address;
+	//result = address;
 	immediate = operand3;
 
 	sim_ptr->fill_station(this);
@@ -45,7 +46,7 @@ inline bool LW::execute()
 		cycles--;
 
 	if (cycles == 0) {
-		word = sim_ptr->datamem_rd(address);
+		result = sim_ptr->datamem_rd(address);
 		return true;
 	}
 	else
@@ -62,4 +63,5 @@ inline void LW::commit()
 	sim_ptr->rf_wr(operand1, word);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
 }
+
 #endif

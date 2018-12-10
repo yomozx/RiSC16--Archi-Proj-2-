@@ -17,6 +17,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
+	virtual bool ops_ready() { return true; };
 };
 
 inline SW::SW() {

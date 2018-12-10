@@ -21,6 +21,16 @@ bool instruction::isReady()
 	return ready;
 }
 
+void instruction::start_ex()
+{
+	started_ex = 1;
+}
+
+bool instruction::executing()
+{
+	return started_ex;
+}
+
 string instruction::get_name() {
 	return instruction_name;
 }

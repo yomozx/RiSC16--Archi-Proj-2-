@@ -16,6 +16,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
+	bool ops_ready();
 };
 
 inline ADD::ADD() {
@@ -78,6 +79,12 @@ inline void ADD::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
+}
+
+inline bool ADD::ops_ready()
+{
+	if (p1->isReady() && p2->isReady()) return true;
+	else return false;
 }
 
 #endif

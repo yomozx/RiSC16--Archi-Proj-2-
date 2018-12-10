@@ -15,6 +15,7 @@ class Inst2OP : public instruction
 		virtual void issue() = 0;
 		virtual bool execute() = 0;
 		virtual void writeback() = 0;
+		virtual bool ops_ready() = 0;
 		int get_result();
 		int get_operand1();
 		int get_operand2();
