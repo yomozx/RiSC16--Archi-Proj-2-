@@ -6,6 +6,7 @@
 #include <iostream>
 #include "Instruction.h"
 
+
 using namespace std;
 
 
@@ -71,10 +72,11 @@ public:
     }
 
     instruction *readData(int address) {
-        if (arr[address] == nullptr)
-            throw invalid_argument("Memory location being accessed does not have an instruction.");
-        else
-            return arr[address];
+		if (arr[address])
+			//throw invalid_argument("Memory location being accessed does not have an instruction.");
+			return arr[address];
+       else
+            return nullptr;
     }
 
     void storeData(int address, instruction *inst) {

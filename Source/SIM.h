@@ -67,9 +67,6 @@ public:
 	void set_RAT(int addr, instruction*);
 	void fill_ROB(instruction* inst);
 	void fill_loadBuffer(instruction* inst);
-
-	bool CheckSWBuff(int address, int id);
-
 };
 
 #endif

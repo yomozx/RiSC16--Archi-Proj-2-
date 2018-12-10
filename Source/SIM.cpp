@@ -44,11 +44,13 @@ void SIM::simulate() {
 
 	pc = starting_address;
 	num_cycles = 0;
-	instruction *ins1, *ins2;
+	instruction* ins1 = nullptr;
+	instruction* ins2 = nullptr;
 	bool loadstore = false;
+	bool all_read = false;
+	bool program_finished = false;
 
-
-	while (pc <= starting_address + last_read) {
+	while (!program_finished) {
 
 		//Commit
 		if (!ROB.empty()) {
@@ -165,6 +167,7 @@ void SIM::simulate() {
 			else {
 				ins1 = instq.front();
 				instq.pop();
+				ins1->issue();
 			}
 		}
 		if (!instq.empty()) { // checking second instruction
@@ -175,12 +178,12 @@ void SIM::simulate() {
 				stall = true;
 			else {
 				if (dependent(ins1, instq.front())) { //we only issue one instruction
-					ins1->issue();
+					//ins1->issue();
 				}
 				else { //issuing two instructions
 					ins2 = instq.front();
 					instq.pop();
-					ins1->issue();
+					//ins1->issue();
 					ins2->issue();
 				}
 			}
@@ -188,31 +191,38 @@ void SIM::simulate() {
 
 
 		//Fetch
-		if (instq.size() == 4) //checking for capacity
-			stall = true;
-		else
+		if (!all_read)
 		{
-			instq.push(inst_memory.readData(pc));
-
-			if (instq.size() == 4)
-			{ //checking for capacity after first issue
+			if (instq.size() == 4) //checking for capacity
 				stall = true;
-				pc++; //because we are stalling, we need to account for instruction that has already been pushed
+			else
+			{
+				instq.push(inst_memory.readData(pc));
+				if (inst_memory.readData(pc + 1) != nullptr)
+				{
+					if (instq.size() == 4)
+					{ //checking for capacity after first issue
+						stall = true;
+						pc++; //because we are stalling, we need to account for instruction that has already been pushed
+					}
+					else if (inst_memory.readData(pc)->get_name() != "JMP" && inst_memory.readData(pc)->get_name() != "JALR" && inst_memory.readData(pc)->get_name() != "RET")
+						instq.push(inst_memory.readData(pc + 1));
+				}
 			}
-			else if (inst_memory.readData(pc - 1)->get_name() != "JMP" && inst_memory.readData(pc - 1)->get_name() != "JALR" && inst_memory.readData(pc - 1)->get_name() != "RET")
-				instq.push(inst_memory.readData(pc+1));
 		}
 
 		pc = stall ? pc : pc + 2;
+		if (pc >= last_read) all_read = true;
 		num_cycles++;
 		stall = false; //resetting the value
+		program_finished = instq.empty() && ROB.empty() && all_read;
 	}
 
 
 	cout << "Program finished executing instructions" << endl << "\nResults:\n";
 	cout << "Cycles Elapsed: " << num_cycles << endl;
 	cout << "IPC: " << instr_commits / num_cycles << endl;
-	cout << "Branch Miss (%): " << (branch_misses / branches) * 100;
+	if (branches > 0) cout << "Branch Miss (%): " << (branch_misses / branches) * 100;
 }
 
 void SIM::read_file() {
@@ -454,7 +464,7 @@ bool SIM::dependent(instruction *one, instruction *two) {
 bool SIM::valid(instruction *inst) {
 
     if (inst->number_operands() == 1)
-	    if (inst->get_name == "JMP" || RAT.readData(inst->get_operand1()) == nullptr || (RAT.readData(inst->get_operand1())->isReady())) 
+	    if (inst->get_name() == "JMP" || RAT.readData(inst->get_operand1()) == nullptr || (RAT.readData(inst->get_operand1())->isReady())) 
 			return true;
 
     if (inst->number_operands() == 2)
