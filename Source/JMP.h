@@ -17,7 +17,7 @@ public:
 };
 
 inline JMP::JMP() {
-	cycles = 1;
+	cycles = 2;
 	funcUnit = "JMP";
 }
 

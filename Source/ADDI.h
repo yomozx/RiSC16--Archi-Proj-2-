@@ -20,7 +20,7 @@ public:
 };
 
 inline ADDI::ADDI() {
-	cycles = 2;
+	cycles = 3;
 	funcUnit = "ADD";
 	valid = true;
 }
@@ -72,7 +72,7 @@ inline void ADDI::commit()
 
 inline bool ADDI::ops_ready()
 {
-	if (p->isReady()) return true;
+	if (p == nullptr || p->isReady()) return true;
 	else return false;
 }
 

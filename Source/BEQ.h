@@ -21,7 +21,7 @@ public:
 };
 
 inline BEQ::BEQ() {
-	cycles = 1;
+	cycles = 2;
 	funcUnit = "BEQ";
 	valid[0] = valid[1] = true;
 }
@@ -106,7 +106,7 @@ inline void BEQ::commit()
 
 inline bool BEQ::ops_ready()
 {
-	if (p1->isReady() && p2->isReady()) return true;
+	if ((p1 == nullptr || p1->isReady()) && (p2 == nullptr || p2->isReady())) return true;
 	else return false;
 }
 

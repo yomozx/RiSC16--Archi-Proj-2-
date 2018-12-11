@@ -21,7 +21,7 @@ public:
 };
 
 inline SW::SW() {
-	cycles = 2;
+	cycles = 3;
 	funcUnit = "SW";
 	valid[0] = valid[1] = true;
 }

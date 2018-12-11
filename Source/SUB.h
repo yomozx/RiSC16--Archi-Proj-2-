@@ -20,7 +20,7 @@ public:
 };
 
 inline SUB::SUB() {
-	cycles = 2;
+	cycles = 3;
 	funcUnit = "ADD";
 	valid[0] = valid[1] = true;
 }
@@ -84,8 +84,8 @@ inline void SUB::commit()
 
 inline bool SUB::ops_ready()
 {
-	if (p1->isReady() && p2->isReady()) return true;
-	else return false;
+	if ((p1 == nullptr || p1->isReady()) && (p2 == nullptr || p2->isReady())) return true;
+	else return false;	
 }
 
 #endif

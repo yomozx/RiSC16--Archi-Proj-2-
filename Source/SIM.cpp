@@ -52,6 +52,7 @@ void SIM::simulate() {
 
 	while (!program_finished) {
 
+		num_cycles++;
 		//Commit
 		if (!ROB.empty()) {
 			while (!ROB.empty() && ROB.front()->isReady()) {
@@ -161,6 +162,7 @@ void SIM::simulate() {
 
 
 		//Fetch
+
 		if (!all_read)
 		{
 			if (instq.size() == 4) //checking for capacity
@@ -184,7 +186,6 @@ void SIM::simulate() {
 
 		pc = stall ? pc : pc + 2;
 		if (pc >= last_read) all_read = true;
-		num_cycles++;
 		loadstore = false;
 		program_finished = instq.empty() && ROB.empty() && all_read;
 	}
@@ -192,8 +193,8 @@ void SIM::simulate() {
 
 	cout << "Program finished executing instructions" << endl << "\nResults:\n";
 	registers.Display();
-	cout << "Cycles Elapsed: " << num_cycles << endl;
-	cout << "IPC: " << float(instr_commits) / num_cycles << endl;
+	cout << "Cycles Elapsed: " << dec << num_cycles << endl;
+	cout << "IPC: "  << float(instr_commits) / num_cycles << endl;
 	if (branches > 0) cout << "Branch Miss (%): " << (branch_misses / branches) * 100;
 }
 
@@ -442,7 +443,7 @@ bool SIM::valid(instruction *inst) {
     if (inst->number_operands() == 2)
         if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady())
             return true;
-		else if ((RAT.readData(inst->get_operand2()) == inst) && inst->ops_ready()) return true;
+		else if ((RAT.readData(inst->get_operand2()) == inst) && inst->ops_ready() || (RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID())) return true;
 
 	if (inst->number_operands() == 3 )
 	{
@@ -453,12 +454,18 @@ bool SIM::valid(instruction *inst) {
 				RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3())->isReady() ||
 				RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3()) == nullptr)
 				return true;
-			else if ((RAT.readData(inst->get_operand2()) == inst || RAT.readData(inst->get_operand3())) && inst->ops_ready()) return true;
+			else if ((	RAT.readData(inst->get_operand2()) == inst || 
+						RAT.readData(inst->get_operand3()) || 
+						RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID() || 
+						RAT.readData(inst->get_operand3())->get_ID() > inst->get_ID() )
+						&& inst->ops_ready()) return true;
 		}
 		else //if i-type
 		{
 			if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady()) return true;
-			else  if ((RAT.readData(inst->get_operand2()) == inst) && inst->ops_ready()) return true;
+			else  if (((RAT.readData(inst->get_operand2()) == inst) || 
+					   (RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID()))
+						&& inst->ops_ready()) return true;
 		}
 	}
 

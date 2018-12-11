@@ -19,7 +19,7 @@ public:
 };
 
 inline JALR::JALR() {
-	cycles = 1;
+	cycles = 2;
 	funcUnit = "JMP";
 	valid = true;
 }

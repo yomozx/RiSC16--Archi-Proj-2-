@@ -45,7 +45,7 @@ public:
     void Display() const {
         for (int i = 0; i < Size; i++) {
 			if (Size == 8)
-				cout << "Register " << i << ": ";
+				cout << "Register " << dec <<  i << ": ";
             cout << arr[i] << endl;
         }
     };

@@ -20,7 +20,7 @@ public:
 };
 
 inline NAND::NAND() {
-	cycles = 1;
+	cycles = 2;
 	funcUnit = "NAND";
 	valid[0] = valid[1] = true;
 }
@@ -82,7 +82,7 @@ inline void NAND::commit()
 
 inline bool NAND::ops_ready()
 {
-	if (p1->isReady() && p2->isReady()) return true;
+	if ((p1 == nullptr || p1->isReady()) && (p2 == nullptr || p2->isReady())) return true;
 	else return false;
 }
 

@@ -19,7 +19,7 @@ public:
 };
 
 inline RET::RET() {
-	cycles = 1;
+	cycles = 2;
 	funcUnit = "JMP";
 	valid = true;
 }

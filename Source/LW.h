@@ -19,7 +19,7 @@ public:
 };
 
 inline LW::LW() {
-	cycles = 2;
+	cycles = 3;
 	funcUnit = "LW";
 	valid = true;
 }
