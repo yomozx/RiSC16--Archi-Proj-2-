@@ -95,12 +95,12 @@ void SIM::simulate() {
 						BEQ_stations[i]->writeback();
 						BEQ_stations[i] = nullptr; //freeing up the station
 					}
-		for (instruction *element : LW_stations)
-			if (element != nullptr)
-				if (valid(element))
-					if (element->execute()) {
-						element->writeback();
-						element = nullptr; //freeing up the station
+		for (int i = 0; i < 2; i++)
+			if (LW_stations[i] != nullptr)
+				if (valid(LW_stations[i]))
+					if (LW_stations[i]->execute()) {
+						LW_stations[i]->writeback();
+						LW_stations[i] = nullptr; //freeing up the station
 					}
 		for (int i = 0; i < 2; i++)
 			if (SW_stations[i] != nullptr)
@@ -235,25 +235,25 @@ void SIM::read_file() {
                     if (name == "ADD")
                         inst_memory.storeData(last_read, inst = new ADD(this));
                     else if (name == "SUB")
-                        inst_memory.storeData(last_read, inst = new SUB);
+                        inst_memory.storeData(last_read, inst = new SUB(this));
                     else if (name == "MUL")
-                        inst_memory.storeData(last_read, inst = new MUL);
+                        inst_memory.storeData(last_read, inst = new MUL(this));
                     else if (name == "JMP")
-                        inst_memory.storeData(last_read, inst = new JMP);
+                        inst_memory.storeData(last_read, inst = new JMP(this));
                     else if (name == "LW")
-                        inst_memory.storeData(last_read, inst = new LW);
+                        inst_memory.storeData(last_read, inst = new LW(this));
                     else if (name == "SW")
-                        inst_memory.storeData(last_read, inst = new SW);
+                        inst_memory.storeData(last_read, inst = new SW(this));
                     else if (name == "BEQ")
-                        inst_memory.storeData(last_read, inst = new BEQ);
+                        inst_memory.storeData(last_read, inst = new BEQ(this));
                     else if (name == "ADDI")
-                        inst_memory.storeData(last_read, inst = new ADDI);
+                        inst_memory.storeData(last_read, inst = new ADDI(this));
                     else if (name == "NAND")
-                        inst_memory.storeData(last_read, inst = new NAND);
+                        inst_memory.storeData(last_read, inst = new NAND(this));
                     else if (name == "JALR")
-                        inst_memory.storeData(last_read, inst = new JALR);
+                        inst_memory.storeData(last_read, inst = new JALR(this));
                     else if (name == "RET")
-                        inst_memory.storeData(last_read, inst = new RET);
+                        inst_memory.storeData(last_read, inst = new RET(this));
                     else
                         throw invalid_argument(
                                 "instruction at index " + to_string(last_read) + " name is not supported.");
@@ -449,11 +449,14 @@ bool SIM::valid(instruction *inst) {
 	{
 		if (rtype(inst))
 		{
-			if ((RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3()) == nullptr) ||
-				RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3())->isReady() ||
-				RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3())->isReady() ||
-				RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3()) == nullptr)
-				return true;
+			if(RAT.readData(inst->get_operand2()) == nullptr)
+			{
+				if( RAT.readData(inst->get_operand3()) == nullptr || RAT.readData(inst->get_operand3())->isReady()) return true;
+			}
+			else if (RAT.readData(inst->get_operand2())->isReady())
+			{
+				if( RAT.readData(inst->get_operand3()) == nullptr || RAT.readData(inst->get_operand3())->isReady()) return true;
+			}
 			else if ((	RAT.readData(inst->get_operand2()) == inst || 
 						RAT.readData(inst->get_operand3()) || 
 						RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID() || 
@@ -607,25 +610,25 @@ void SIM::read_instr() {
         if (name == "ADD")
             inst_memory.storeData(last_read, inst = new ADD(this));
         else if (name == "SUB")
-            inst_memory.storeData(last_read, inst = new SUB);
+            inst_memory.storeData(last_read, inst = new SUB(this));
         else if (name == "MUL")
-            inst_memory.storeData(last_read, inst = new MUL);
+            inst_memory.storeData(last_read, inst = new MUL(this));
         else if (name == "JMP")
-            inst_memory.storeData(last_read, inst = new JMP);
+            inst_memory.storeData(last_read, inst = new JMP(this));
         else if (name == "LW")
-            inst_memory.storeData(last_read, inst = new LW);
+            inst_memory.storeData(last_read, inst = new LW(this));
         else if (name == "SW")
-            inst_memory.storeData(last_read, inst = new SW);
+            inst_memory.storeData(last_read, inst = new SW(this));
         else if (name == "BEQ")
-            inst_memory.storeData(last_read, inst = new BEQ);
+            inst_memory.storeData(last_read, inst = new BEQ(this));
         else if (name == "ADDI")
-            inst_memory.storeData(last_read, inst = new ADDI);
+            inst_memory.storeData(last_read, inst = new ADDI(this));
         else if (name == "NAND")
-            inst_memory.storeData(last_read, inst = new NAND);
+            inst_memory.storeData(last_read, inst = new NAND(this));
         else if (name == "JALR")
-            inst_memory.storeData(last_read, inst = new JALR);
+            inst_memory.storeData(last_read, inst = new JALR(this));
         else if (name == "RET")
-            inst_memory.storeData(last_read, inst = new RET);
+            inst_memory.storeData(last_read, inst = new RET(this));
         else
             throw invalid_argument("instruction at index " + to_string(last_read) + ": name is not supported.");
 

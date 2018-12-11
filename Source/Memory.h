@@ -66,9 +66,9 @@ class memory<instruction*> {
 				arr[i] = NULL;
 		}
 		~memory() {
-			for (int i = 0; i < 64 * 1024; i++)
-				if (arr[i] != NULL)
-					delete arr[i];
+			//for (int i = 0; i < 64 * 1024; i++)
+				//if (arr[i] != NULL)
+				//	delete arr[i];
 		}
 		instruction* readData(int address) {
 			if (arr[address] == NULL)

@@ -8,7 +8,7 @@ class JMP : public Inst1OP {
 private:
 	int immediate;
 public:
-	JMP();
+	JMP(SIM*);
 	void issue();
 	bool execute();
 	void writeback();
@@ -16,9 +16,10 @@ public:
 	virtual bool ops_ready() { return true; };
 };
 
-inline JMP::JMP() {
+inline JMP::JMP(SIM* ptr) {
 	cycles = 2;
 	funcUnit = "JMP";
+	sim_ptr = ptr;
 }
 
 inline void JMP::issue() 

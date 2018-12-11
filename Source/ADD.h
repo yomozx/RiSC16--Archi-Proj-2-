@@ -45,7 +45,7 @@ inline void ADD::issue()
 		if (sim_ptr->get_RAT(operand3)->isReady()) parameter2 = sim_ptr->get_RAT(operand3)->get_result();
 		else
 		{
-			valid[0] = false;
+			valid[1] = false;
 			p2 = sim_ptr->get_RAT(operand3);
 		}
 	}

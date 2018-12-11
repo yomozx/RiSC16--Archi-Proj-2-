@@ -11,7 +11,7 @@ private:
 	instruction* p2;
 	bool valid[2];
 public:
-	MUL();
+	MUL(SIM*);
 	void issue();
 	bool execute();
 	void writeback();
@@ -19,10 +19,11 @@ public:
 	virtual bool ops_ready();
 };
 
-inline MUL::MUL() {
+inline MUL::MUL(SIM* ptr) {
 	cycles = 9;
 	funcUnit = "MUL";
 	valid[0] = valid[1] = true;
+	sim_ptr = ptr;
 }
 
 inline void MUL::issue()
@@ -44,7 +45,7 @@ inline void MUL::issue()
 		if (sim_ptr->get_RAT(operand3)->isReady()) parameter2 = sim_ptr->get_RAT(operand3)->get_result();
 		else
 		{
-			valid[0] = false;
+			valid[1] = false;
 			p2 = sim_ptr->get_RAT(operand3);
 		}
 	}

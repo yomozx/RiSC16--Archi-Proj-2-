@@ -11,7 +11,7 @@ private:
 	instruction* p;
 	bool valid;
 public:
-	ADDI();
+	ADDI(SIM*);
 	void issue();
 	bool execute();
 	void writeback();
@@ -19,10 +19,11 @@ public:
 	virtual bool ops_ready();
 };
 
-inline ADDI::ADDI() {
+inline ADDI::ADDI(SIM* ptr) {
 	cycles = 3;
 	funcUnit = "ADD";
 	valid = true;
+	sim_ptr = ptr;
 }
 
 inline void ADDI::issue()

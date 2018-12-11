@@ -10,7 +10,7 @@ private:
 	instruction* p;
 	bool valid;
 public:
-	JALR();
+	JALR(SIM*);
 	void issue();
 	bool execute();
 	void writeback();
@@ -18,10 +18,11 @@ public:
 	virtual bool ops_ready() { return true; };
 };
 
-inline JALR::JALR() {
+inline JALR::JALR(SIM* ptr) {
 	cycles = 2;
 	funcUnit = "JMP";
 	valid = true;
+	sim_ptr = ptr;
 }
 
 inline void JALR::issue()

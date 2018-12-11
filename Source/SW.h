@@ -12,7 +12,7 @@ private:
 	instruction* p2;
 	bool valid[2];
 public:
-	SW();
+	SW(SIM*);
 	void issue();
 	bool execute();
 	void writeback();
@@ -20,10 +20,11 @@ public:
 	virtual bool ops_ready() { return true; };
 };
 
-inline SW::SW() {
+inline SW::SW(SIM* ptr) {
 	cycles = 3;
 	funcUnit = "SW";
 	valid[0] = valid[1] = true;
+	sim_ptr = ptr;
 }
 
 inline void SW::issue()

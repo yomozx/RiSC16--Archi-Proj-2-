@@ -10,7 +10,7 @@ private:
 	instruction* p;
 	bool valid;
 public:
-	RET();
+	RET(SIM*);
 	void issue();
 	bool execute();
 	void writeback();
@@ -18,10 +18,11 @@ public:
 	virtual bool ops_ready() { return true; };
 };
 
-inline RET::RET() {
+inline RET::RET(SIM* ptr) {
 	cycles = 2;
 	funcUnit = "JMP";
 	valid = true;
+	sim_ptr = ptr;
 }
 
 inline void RET::issue()
