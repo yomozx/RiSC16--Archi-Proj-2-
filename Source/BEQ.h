@@ -11,6 +11,7 @@ private:
 	instruction* p2;
 	bool valid[2];
 	bool taken;
+	int mypc;
 public:
 	BEQ(SIM*);
 	void issue();
@@ -55,17 +56,20 @@ inline void BEQ::issue()
     sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
-	address = sim_ptr->get_pc() + 1 + operand3 + sim_ptr->get_startingAddr();
+	mypc = sim_ptr->get_startingAddr() + this->get_ID();
+
+	address = mypc + 1 + operand3;
 
 	// branch prediction
 	if (operand3 < 0) {
 		taken = 1;
 		sim_ptr->set_pc(address);
+		sim_ptr->flush_iq();
 	}
 	else
 		taken = 0;
 
-	oldPC = sim_ptr->get_pc() + 1;
+	oldPC = mypc + 1;
 
 }
 

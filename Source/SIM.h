@@ -18,6 +18,7 @@ private:
 	int branches;
 	int branch_misses;
 	bool stall = false;
+	bool flush = false;
 	memory<__int16> data_memory;
 	memory<__int16> registers;
 	bool valid_bits[8]; //array of validity bits for RAT
@@ -60,6 +61,7 @@ public:
 
 	void RAT_validate(int addr);
 	void RAT_invalidate(int addr);
+	void flush_iq();
 
 	void fill_station(instruction* inst);
 	void fill_RAT(instruction *inst);

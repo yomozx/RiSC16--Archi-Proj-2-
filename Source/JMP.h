@@ -6,7 +6,7 @@ using namespace std;
 
 class JMP : public Inst1OP {
 private:
-	int immediate;
+	int immediate, mypc;
 public:
 	JMP(SIM*);
 	void issue();
@@ -29,6 +29,11 @@ inline void JMP::issue()
 	sim_ptr->fill_ROB(this);
 
 	immediate = operand1;
+	mypc = sim_ptr->get_startingAddr() + this->get_ID();
+
+	int address =  mypc + 1 + immediate;
+	sim_ptr->set_pc(address);
+	sim_ptr->flush_iq();
 }
 
 inline bool JMP::execute()
@@ -36,8 +41,6 @@ inline bool JMP::execute()
 	cycles--;
 
 	if (cycles == 0) {
-		int address = sim_ptr->get_pc() + 1 + immediate + sim_ptr->get_startingAddr();
-		sim_ptr->set_pc(address);
 		return true;
 	}
 	else

@@ -38,6 +38,8 @@ inline void RET::issue()
 		}
 	}
 
+	sim_ptr->set_pc(return_address);
+
 	sim_ptr->fill_station(this);
 	sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
@@ -62,6 +64,5 @@ inline void RET::writeback()
 
 inline void RET::commit() 
 {
-	sim_ptr->set_pc(return_address);
 }
 #endif

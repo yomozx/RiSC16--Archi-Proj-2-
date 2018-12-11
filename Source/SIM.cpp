@@ -47,6 +47,7 @@ void SIM::simulate() {
 	instruction* ins1 = nullptr;
 	instruction* ins2 = nullptr;
 	bool loadstore = false;
+	bool jmpstall = false;
 	bool all_read = false;
 	bool program_finished = false;
 
@@ -67,6 +68,8 @@ void SIM::simulate() {
 						ROB.front()->commit();
 						branch_misses++;
 						instr_commits++;
+						while (!instq.empty())
+							instq.pop();
 						while (!ROB.empty())
 							ROB.pop();
 					}
@@ -137,12 +140,20 @@ void SIM::simulate() {
 			if ((instq.front()->get_name() == "LW" || instq.front()->get_name() == "SW") && !valid(instq.front())) //going to check load buffers
 				loadstore = true;
 
-			if(!loadstore && !are_busy(instq.front()->get_funcUnit()) && ROB.size() < 6)
+			if ((instq.front()->get_name() == "JALR" || instq.front()->get_name() == "RET") && !valid(instq.front())) //check if uncoditional jump isn't ready to calc address
+				jmpstall = true;
+
+			if(!jmpstall && !loadstore && !are_busy(instq.front()->get_funcUnit()) && ROB.size() < 6)
 			{
 				ins1 = instq.front();
 				instq.pop();
 				ins1->issue();
-
+				if (flush)
+				{
+					while (!instq.empty())
+						instq.pop();
+					flush = false;
+				}
 
 				if (!instq.empty()) { // checking second instruction
 					if ((instq.front()->get_name() == "LW" || instq.front()->get_name() == "SW") && !valid(instq.front())) //going to check load buffers
@@ -154,6 +165,12 @@ void SIM::simulate() {
 							ins2 = instq.front();
 							instq.pop();
 							ins2->issue();
+							if (flush)
+							{
+								while (!instq.empty())
+									instq.pop();
+								flush = false;
+							}
 						}
 					}
 				}
@@ -165,7 +182,7 @@ void SIM::simulate() {
 
 		if (!all_read)
 		{
-			if (instq.size() == 4) //checking for capacity
+			if (instq.size() == 4 || jmpstall) //checking for capacity
 				stall = true;
 			else if(!stall)
 			{
@@ -181,12 +198,14 @@ void SIM::simulate() {
 						instq.push(inst_memory.readData(pc + 1));
 				}
 			}
-			else stall = false; //resetting the value
+			//else stall = false; //resetting the value
 		}
 
 		pc = stall ? pc : pc + 2;
+		stall = false;
 		if (pc >= last_read) all_read = true;
 		loadstore = false;
+		jmpstall = false;
 		program_finished = instq.empty() && ROB.empty() && all_read;
 	}
 
@@ -486,6 +505,11 @@ void SIM::RAT_validate(int addr) {
 
 void SIM::RAT_invalidate(int addr) {
     valid_bits[addr] = false;
+}
+
+void SIM::flush_iq()
+{
+	flush = true;
 }
 
 void SIM::fill_station(instruction *inst) {

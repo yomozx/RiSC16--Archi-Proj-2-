@@ -23,7 +23,7 @@ public:
     }
 
     ~memory() {
-        delete[] arr;
+        delete arr;
     };
 
     Type readData(int address) {

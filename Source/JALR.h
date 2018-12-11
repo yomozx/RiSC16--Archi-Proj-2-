@@ -38,6 +38,9 @@ inline void JALR::issue()
 		}
 	}
 
+	result = sim_ptr->get_pc() + 1;
+	sim_ptr->set_pc(parameter1);
+	
 	sim_ptr->fill_station(this);
 	sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
@@ -45,12 +48,9 @@ inline void JALR::issue()
 
 inline bool JALR::execute()
 {
-	if (!valid) parameter1 = p->get_result();
-
 	cycles--;
 
 	if (cycles == 0) {
-		result = sim_ptr->get_pc() + 1;
 		return true;
 	}
 	else
@@ -65,6 +65,5 @@ inline void JALR::writeback()
 inline void JALR::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
-	sim_ptr->set_pc(parameter1);
 }
 #endif

@@ -21,7 +21,7 @@ public:
 };
 
 inline SW::SW(SIM* ptr) {
-	cycles = 3;
+	cycles = 2;
 	funcUnit = "SW";
 	valid[0] = valid[1] = true;
 	sim_ptr = ptr;
