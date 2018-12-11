@@ -1,0 +1,14 @@
+.text
+LW x1,x0,20
+ADDI x2,x0,21
+ADD x3,x2,x1
+ADDI x4,x0,0
+BEQ x4,x1,7
+LW x5,x2,0
+MUL x5,x5,x1
+SW x5,x3,0
+ADDI x2,x2,1
+ADDI x3,x3,1
+ADDI x4,x4,1
+JMP -8
+ADD x0,x0,x0
