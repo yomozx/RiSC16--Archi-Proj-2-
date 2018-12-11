@@ -20,8 +20,8 @@ private:
 	bool stall = false;
 	memory<int> data_memory;
 	memory<int> registers;
-	memory<instruction*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
 	bool valid_bits[8]; //array of validity bits for RAT
+	memory<instruction*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
 	memory<instruction*> inst_memory;
 	queue<instruction*> instq; //size is 4 instructions
 	queue<instruction*> ROB;   //size is 6 instructions

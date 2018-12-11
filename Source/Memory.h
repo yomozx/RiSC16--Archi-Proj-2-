@@ -44,6 +44,8 @@ public:
 
     void Display() const {
         for (int i = 0; i < Size; i++) {
+			if (Size == 8)
+				cout << "Register " << i << ": ";
             cout << arr[i] << endl;
         }
     };
@@ -53,44 +55,41 @@ public:
 
 // template specialization
 template<>
-class memory<instruction *> {
-private:
-    instruction **arr;
-    int Size;
+class memory<instruction*> {
+	friend class instruction;
+	private:
+		instruction * arr[64 * 1024];
 
+	public:
+		memory() {
+			for (int i = 0; i < 64 * 1024; i++)
+				arr[i] = NULL;
+		}
+		~memory() {
+			for (int i = 0; i < 64 * 1024; i++)
+				if (arr[i] != NULL)
+					delete arr[i];
+		}
+		instruction* readData(int address) {
+			if (arr[address] == NULL)
+				return nullptr;
+			else
+				return arr[address];
+		}
 
-public:
-    memory(int size=64*1024) : arr(new instruction *[size]), Size(size) {
-        for (int i = 0; i < Size; i++)
-            arr[i] = 0;
-    }
+		void storeData(int address, instruction* inst)
+		{
+			arr[address] = inst;
+		}
 
-    ~memory() {
-        for (int i = 0; i < Size; i++)
-            if (arr[i]!= nullptr)
-                delete arr[i];
-    }
-
-    instruction *readData(int address) {
-		if (arr[address])
-			//throw invalid_argument("Memory location being accessed does not have an instruction.");
-			return arr[address];
-       else
-            return nullptr;
-    }
-
-    void storeData(int address, instruction *inst) {
-        arr[address] = inst;
-    }
-
-    void Display() const {
-        for (int i = 0; i < 64 * 1024; i++)
-            if (arr[i] != nullptr) {
-                cout << "\n0x" << hex << i << ": ";
-                arr[i]->display();
-            }
-    }
-
-};
+		void Display() const
+		{
+			for (int i = 0; i < 64 * 1024; i++)
+				if (arr[i] != NULL) {
+					cout << "\n0x" << hex << i << ": ";
+					arr[i]->display();
+				}
+		}	
+	};
 
 #endif

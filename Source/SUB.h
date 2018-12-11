@@ -27,6 +27,7 @@ inline SUB::SUB() {
 
 inline void SUB::issue()
 {
+
 	if (sim_ptr->get_RAT(operand2) == nullptr) parameter1 = sim_ptr->rf_rd(operand2);
 	else
 	{

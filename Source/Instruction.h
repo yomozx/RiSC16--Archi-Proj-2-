@@ -35,7 +35,7 @@ public:
 	virtual int get_operand3() = 0;
 	virtual int number_operands() = 0; //gets number of operands
 	virtual bool ops_ready() = 0;
-	string get_name();
+	virtual string get_name();
 	int get_ID();
 	void set_ID(int);
 	string get_funcUnit();

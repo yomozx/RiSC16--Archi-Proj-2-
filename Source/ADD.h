@@ -11,7 +11,7 @@ private:
 	instruction* p2;
 	bool valid[2];
 public:
-	ADD();
+	ADD(SIM* ptr);
 	void issue();
 	bool execute();
 	void writeback();
@@ -19,10 +19,11 @@ public:
 	bool ops_ready();
 };
 
-inline ADD::ADD() {
-	cycles = 2;
+inline ADD::ADD(SIM* ptr) {
+	cycles = 3; //an extra one for writeback
 	funcUnit = "ADD";
 	valid[0] = valid[1] = true;
+	sim_ptr = ptr;
 }
 
 inline void ADD::issue()
