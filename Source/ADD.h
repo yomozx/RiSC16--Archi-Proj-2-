@@ -11,17 +11,19 @@ private:
 	instruction* p2;
 	bool valid[2];
 public:
-	ADD();
+	ADD(SIM* ptr);
 	void issue();
 	bool execute();
 	void writeback();
 	void commit();
+	bool ops_ready();
 };
 
-inline ADD::ADD() {
-	cycles = 2;
+inline ADD::ADD(SIM* ptr) {
+	cycles = 3; //an extra one for writeback
 	funcUnit = "ADD";
 	valid[0] = valid[1] = true;
+	sim_ptr = ptr;
 }
 
 inline void ADD::issue()
@@ -78,6 +80,12 @@ inline void ADD::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
+}
+
+inline bool ADD::ops_ready()
+{
+	if (p1->isReady() && p2->isReady()) return true;
+	else return false;
 }
 
 #endif

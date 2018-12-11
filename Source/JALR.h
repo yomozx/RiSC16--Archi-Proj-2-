@@ -15,6 +15,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
+	virtual bool ops_ready() { return true; };
 };
 
 inline JALR::JALR() {
@@ -31,7 +32,7 @@ inline void JALR::issue()
 		if (sim_ptr->get_RAT(operand2)->isReady()) parameter1 = sim_ptr->get_RAT(operand2)->get_result();
 		else
 		{
-			valid= false;
+			valid = false;
 			p = sim_ptr->get_RAT(operand2);
 		}
 	}
@@ -43,11 +44,12 @@ inline void JALR::issue()
 
 inline bool JALR::execute()
 {
+	if (!valid) parameter1 = p->get_result();
+
 	cycles--;
 
 	if (cycles == 0) {
 		result = sim_ptr->get_pc() + 1;
-		sim_ptr->set_pc(parameter1);
 		return true;
 	}
 	else
@@ -62,5 +64,6 @@ inline void JALR::writeback()
 inline void JALR::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
+	sim_ptr->set_pc(parameter1);
 }
 #endif

@@ -16,6 +16,7 @@ protected:
 	int operand3;
 	int cycles;
 	bool ready;
+	bool started_ex;
 	string funcUnit;
 	static SIM *sim_ptr;
 
@@ -33,11 +34,14 @@ public:
 	virtual int get_operand2() = 0;
 	virtual int get_operand3() = 0;
 	virtual int number_operands() = 0; //gets number of operands
-	string get_name();
+	virtual bool ops_ready() = 0;
+	virtual string get_name();
 	int get_ID();
 	void set_ID(int);
 	string get_funcUnit();
 	void display() const;
 	bool isReady();
+	void start_ex();
+	bool executing();
 };
 #endif

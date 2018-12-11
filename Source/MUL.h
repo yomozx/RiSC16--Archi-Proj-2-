@@ -16,6 +16,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
+	virtual bool ops_ready();
 };
 
 inline MUL::MUL() {
@@ -78,4 +79,11 @@ inline void MUL::commit()
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
 }
+
+inline bool MUL::ops_ready()
+{
+	if (p1->isReady() && p2->isReady()) return true;
+	else return false;
+}
+
 #endif

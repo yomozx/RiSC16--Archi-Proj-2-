@@ -19,7 +19,7 @@
 using namespace std;
 
 SIM::SIM() : pc(0), last_read(0), data_memory(64 * 1024), registers(8), data_memCount(0),
-             starting_address(0), RAT(8) {
+             starting_address(0), instr_commits(0) {
 
     //initializing stations
     for (instruction *element:ADD_stations)
@@ -44,27 +44,34 @@ void SIM::simulate() {
 
 	pc = starting_address;
 	num_cycles = 0;
-	instruction *ins1, *ins2;
+	instruction* ins1 = nullptr;
+	instruction* ins2 = nullptr;
 	bool loadstore = false;
+	bool all_read = false;
+	bool program_finished = false;
 
-
-	while (pc <= starting_address + last_read) {
+	while (!program_finished) {
 
 		//Commit
 		if (!ROB.empty()) {
 			while (!ROB.empty() && ROB.front()->isReady()) {
 				if (!(ROB.front()->get_name() == "BEQ")) { // if not branch
 					ROB.front()->commit();
+					instr_commits++;
 					ROB.pop();
 				}
 				else { // if it's a branch
+					branches++;
 					if (!ROB.front()->get_result()) { // if we mispredicted
 						ROB.front()->commit();
+						branch_misses++;
+						instr_commits++;
 						while (!ROB.empty())
 							ROB.pop();
 					}
 					else {//if it was correctly predicted
 						ROB.front()->commit();
+						instr_commits++;
 						ROB.pop();
 					}
 				}
@@ -74,128 +81,146 @@ void SIM::simulate() {
 		//Execute & Writeback
 		for (instruction *element : ADD_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
 
 		for (instruction *element : BEQ_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
+
 		for (instruction *element : LW_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
+
 		for (instruction *element : SW_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
+
 		for (instruction *element : JMP_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
+
 		for (instruction *element : NAND_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
+
 		for (instruction *element : MUL_stations)
 			if (element != nullptr)
-				if (valid(element))
+				if (valid(element) || element->executing())
+				{
+					element->start_ex();
 					if (element->execute()) {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
+				}
 
 
 		//Issue
 		if (!instq.empty()) { //checking first instruction
-			if (instq.front()->get_name() == "LW") //going to check load buffers
-				for (instruction * element : LW_stations)
-					if (instq.front()->get_result() == element->get_result())
-						loadstore = true;
-			if (instq.front()->get_name() == "SW") {//going to check store buffers
-				for (instruction * element : LW_stations)
-					if (instq.front()->get_result() == element->get_result())
-						loadstore = true;
-				for (instruction * element : SW_stations)
-					if (instq.front()->get_result() == element->get_result())
-						loadstore = true;
-			}
+			if ((instq.front()->get_name() == "LW" || instq.front()->get_name() == "SW") && !valid(instq.front())) //going to check load buffers
+				loadstore = true;
 
-
-			if (are_busy(instq.front()->get_funcUnit()) || loadstore || ROB.size() == 6) //if we have structural hazard
-				stall = true;
-			else {
+			if(!loadstore && !are_busy(instq.front()->get_funcUnit()) && ROB.size() < 6)
+			{
 				ins1 = instq.front();
 				instq.pop();
-			}
-		}
-		if (!instq.empty()) { // checking second instruction
-			if (instq.front()->get_name() == "LW") //going to check load buffers
-				for (instruction * element : LW_stations)
-					if (instq.front()->get_result() == element->get_result())
-						loadstore = true;
-			if (instq.front()->get_name() == "SW") { //going to check store buffers
-				for (instruction * element : LW_stations)
-					if (instq.front()->get_result() == element->get_result())
-						loadstore = true;
-				for (instruction * element : SW_stations)
-					if (instq.front()->get_result() == element->get_result())
-						loadstore = true;
-			}
+				ins1->issue();
 
-			if (!are_busy(instq.front()->get_funcUnit()) && !stall || loadstore || ROB.size() == 6) //if we have structural hazard or load/store hazard
-				stall = true;
-			else {
-				if (dependent(ins1, instq.front())) { //we only issue one instruction
-					ins1->issue();
-				}
-				else { //issuing two instructions
-					ins2 = instq.front();
-					instq.pop();
-					ins1->issue();
-					ins2->issue();
+
+				if (!instq.empty()) { // checking second instruction
+					if ((instq.front()->get_name() == "LW" || instq.front()->get_name() == "SW") && !valid(instq.front())) //going to check load buffers
+						loadstore = true;
+
+					if (!loadstore && !are_busy(instq.front()->get_funcUnit()) && ROB.size() < 6) //if we have structural hazard or load/store hazard
+					{
+						if (!dependent(ins1, instq.front())) { //issuing two instructions if no dependancy
+							ins2 = instq.front();
+							instq.pop();
+							ins2->issue();
+						}
+					}
 				}
 			}
 		}
 
 
 		//Fetch
-		if (instq.size() == 4) //checking for capacity
-			stall = true;
-		else instq.push(inst_memory.readData(pc));
-
-		if (instq.size() == 4) { //checking for capacity after first issue
-			stall = true;
-			pc++; //because we are stalling, we need to account for instruction that has already been pushed
+		if (!all_read)
+		{
+			if (instq.size() == 4) //checking for capacity
+				stall = true;
+			else if(!stall)
+			{
+				instq.push(inst_memory.readData(pc));
+				if (inst_memory.readData(pc + 1) != nullptr)
+				{
+					if (instq.size() == 4)
+					{ //checking for capacity after first issue
+						stall = true;
+						pc++; //because we are stalling, we need to account for instruction that has already been pushed
+					}
+					else if (inst_memory.readData(pc)->get_name() != "JMP" && inst_memory.readData(pc)->get_name() != "JALR" && inst_memory.readData(pc)->get_name() != "RET")
+						instq.push(inst_memory.readData(pc + 1));
+				}
+			}
+			else stall = false; //resetting the value
 		}
-		else instq.push(inst_memory.readData(pc));
-
 
 		pc = stall ? pc : pc + 2;
+		if (pc >= last_read) all_read = true;
 		num_cycles++;
-		stall = false; //resetting the value
+		loadstore = false;
+		program_finished = instq.empty() && ROB.empty() && all_read;
 	}
 
 
-	cout << "Program finished executing instructions" << endl;
+	cout << "Program finished executing instructions" << endl << "\nResults:\n";
+	registers.Display();
+	cout << "Cycles Elapsed: " << num_cycles << endl;
+	cout << "IPC: " << float(instr_commits) / num_cycles << endl;
+	if (branches > 0) cout << "Branch Miss (%): " << (branch_misses / branches) * 100;
 }
 
 void SIM::read_file() {
@@ -205,11 +230,11 @@ void SIM::read_file() {
     cin >> filename;
     file1.open(filename.c_str());
     string ReadLine = "";
+	int ID = 0;
     bool text = false, data = false;
     int address = 0;
     stringstream stream;
     string temp = "";
-	int ID = 0;
 
     if (!file1.fail())
         while (!file1.eof()) {
@@ -233,7 +258,7 @@ void SIM::read_file() {
 
                 if (name != "") {
                     if (name == "ADD")
-                        inst_memory.storeData(last_read, inst = new ADD);
+                        inst_memory.storeData(last_read, inst = new ADD(this));
                     else if (name == "SUB")
                         inst_memory.storeData(last_read, inst = new SUB);
                     else if (name == "MUL")
@@ -290,6 +315,14 @@ void SIM::read_file() {
 
     //data_memory.Display();
 
+}
+
+bool SIM::CheckSWBuff(int address, int ID)
+{
+	for (int i = 0; i < 2; i++)
+		if (SW_stations[i] != nullptr && SW_stations[i]->get_result() == address && ID > SW_stations[i]->get_ID())
+			return false;
+	return true;
 }
 
 void SIM::execute_instr() {
@@ -429,19 +462,38 @@ bool SIM::dependent(instruction *one, instruction *two) {
 bool SIM::valid(instruction *inst) {
 
     if (inst->number_operands() == 1)
-	    if (inst->get_name == "JMP" || RAT.readData(inst->get_operand1()) == nullptr || RAT.readData(inst->get_operand1())->isReady()) 
+	    if (inst->get_name() == "JMP" || RAT.readData(inst->get_operand1()) == nullptr || (RAT.readData(inst->get_operand1())->isReady())) 
 			return true;
 
     if (inst->number_operands() == 2)
         if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady())
             return true;
+		else if ((RAT.readData(inst->get_operand2()) == inst) && inst->ops_ready()) return true;
 
-    if (inst->number_operands() == 3)
-        if ((RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3()) == nullptr) ||
-            RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3())->isReady())
-            return true;
+	if (inst->number_operands() == 3 )
+	{
+		if (rtype(inst))
+		{
+			if ((RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3()) == nullptr) ||
+				RAT.readData(inst->get_operand2()) == nullptr && RAT.readData(inst->get_operand3())->isReady() ||
+				RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3())->isReady() ||
+				RAT.readData(inst->get_operand2())->isReady() && RAT.readData(inst->get_operand3()) == nullptr)
+				return true;
+			else if ((RAT.readData(inst->get_operand2()) == inst || RAT.readData(inst->get_operand3())) && inst->ops_ready()) return true;
+		}
+		else //if i-type
+		{
+			if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady()) return true;
+			else  if ((RAT.readData(inst->get_operand2()) == inst) && inst->ops_ready()) return true;
+		}
+	}
 
     return false;
+}
+
+bool SIM::rtype(instruction* inst)
+{
+	return (inst->get_name() == "ADD" || inst->get_name() == "SUB" || inst->get_name() == "MUL" || inst->get_name() == "NAND");
 }
 
 void SIM::RAT_validate(int addr) {
@@ -455,56 +507,56 @@ void SIM::RAT_invalidate(int addr) {
 void SIM::fill_station(instruction *inst) {
 
     if (inst->get_funcUnit() == "ADD") {
-        for (instruction *element: ADD_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 3;i++)
+            if (ADD_stations[i] == nullptr) {
+				ADD_stations[i] = inst;
                 return;
             }
 
     } else if (inst->get_funcUnit() == "BEQ") {
-        for (instruction *element: BEQ_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 2; i++)
+            if (BEQ_stations[i] == nullptr) {
+				BEQ_stations[i] = inst;
                 return;
             }
 
 
     } else if (inst->get_funcUnit() == "LW") {
-        for (instruction *element: LW_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 2; i++)
+            if (LW_stations[i] == nullptr) {
+				LW_stations[i] = inst;
                 return;
             }
 
 
     } else if (inst->get_funcUnit() == "JMP") {
-        for (instruction *element: JMP_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 3; i++)
+            if (JMP_stations[i] == nullptr) {
+				JMP_stations[i] = inst;
                 return;
             }
 
 
     } else if (inst->get_funcUnit() == "NAND") {
-        for (instruction *element: NAND_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 1; i++)
+            if (NAND_stations[i] == nullptr) {
+				NAND_stations[i] = inst;
                 return;
             }
 
 
     } else if (inst->get_funcUnit() == "MUL") {
-        for (instruction *element: MUL_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 2; i++)
+            if (MUL_stations[i] == nullptr) {
+				MUL_stations[i] = inst;
                 return;
             }
 
 
     } else if (inst->get_funcUnit() == "SW") {
-        for (instruction *element: SW_stations)
-            if (element == nullptr) {
-                element = inst;
+        for (int i = 0; i < 2; i++)
+            if (SW_stations[i] == nullptr) {
+				SW_stations[i] = inst;
                 return;
             }
     }
@@ -538,14 +590,6 @@ void SIM::fill_loadBuffer(instruction *inst) {
     // fill
 }
 
-bool SIM::CheckSWBuff(int address, int id)
-{
-	for (int i = 0; i < 2; i++)
-		if (SW_stations[i]->get_result() == address && SW_stations[i]->get_ID() < id)
-			return false;
-	return true;
-}
-
 /*
 void SIM::reacquire_params(instruction *inst)
 {
@@ -566,6 +610,7 @@ void SIM::read_instr() {
     bool done = false;
     std::cout << "\n0. Enter Instruction" << endl << "1. Exit" << endl;
     std::cin >> done;
+	int ID = 0;
 
     while (!done && last_read != (64 * 1024)) {
         std::string name;
@@ -579,7 +624,7 @@ void SIM::read_instr() {
         getline(str, name, ' ');
 
         if (name == "ADD")
-            inst_memory.storeData(last_read, inst = new ADD);
+            inst_memory.storeData(last_read, inst = new ADD(this));
         else if (name == "SUB")
             inst_memory.storeData(last_read, inst = new SUB);
         else if (name == "MUL")
@@ -604,6 +649,8 @@ void SIM::read_instr() {
             throw invalid_argument("instruction at index " + to_string(last_read) + ": name is not supported.");
 
         inst->set_instruction(whole_inst, last_read);
+		inst->set_ID(ID);
+		ID++;
         last_read += 1;
 
         std::cout << "\n0. Enter Instruction" << endl << "1. Exit" << endl;

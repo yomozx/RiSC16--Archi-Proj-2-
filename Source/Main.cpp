@@ -23,6 +23,8 @@ int main() {
 			simulator.read_file();
 		}
 		simulator.displayMem();
+		cout << endl;
+		simulator.simulate();
 	}
 	catch (const std::invalid_argument& e) {
 		cout << e.what() << endl;

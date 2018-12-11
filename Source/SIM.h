@@ -14,11 +14,14 @@ private:
 	int data_memCount;
 	int starting_address;
 	int num_cycles;
+	int instr_commits;
+	int branches;
+	int branch_misses;
 	bool stall = false;
 	memory<int> data_memory;
 	memory<int> registers;
-	memory<instruction*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
 	bool valid_bits[8]; //array of validity bits for RAT
+	memory<instruction*> RAT; //register alias table (for renaming); points to most up to date source of data (rf or rob).
 	memory<instruction*> inst_memory;
 	queue<instruction*> instq; //size is 4 instructions
 	queue<instruction*> ROB;   //size is 6 instructions
@@ -36,6 +39,7 @@ public:
 	~SIM();
 	void simulate();
 	void read_file();
+	bool CheckSWBuff(int address, int ID);
 	void read_instr();
 	void read_data();
 	void execute_instr();
@@ -52,6 +56,7 @@ public:
 	bool are_busy(string); //returns if all unit are busy
 	bool dependent(instruction*, instruction*); //checks if 1st instruction's rd is used in second instruction
     bool valid (instruction *); //checks if all operand of instruction is valid
+	bool rtype(instruction*);
 
 	void RAT_validate(int addr);
 	void RAT_invalidate(int addr);
@@ -62,9 +67,6 @@ public:
 	void set_RAT(int addr, instruction*);
 	void fill_ROB(instruction* inst);
 	void fill_loadBuffer(instruction* inst);
-
-	bool CheckSWBuff(int address, int id);
-
 };
 
 #endif

@@ -17,7 +17,7 @@ public:
 	bool execute();
 	void writeback();
 	void commit();
-
+	virtual bool ops_ready();
 };
 
 inline BEQ::BEQ() {
@@ -103,4 +103,11 @@ inline void BEQ::commit()
 	if (!result)
 		sim_ptr->set_pc(oldPC);
 }
+
+inline bool BEQ::ops_ready()
+{
+	if (p1->isReady() && p2->isReady()) return true;
+	else return false;
+}
+
 #endif
