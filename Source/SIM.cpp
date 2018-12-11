@@ -72,20 +72,20 @@ void SIM::simulate() {
 		}
 
 		//Execute & Writeback
-		for (int i = 0; i < 3; i++)
-			if (ADD_stations[i] != nullptr)
-				if (valid(ADD_stations[i]))
-					if (ADD_stations[i]->execute()) {
-						ADD_stations[i]->writeback();
-						ADD_stations[i] = nullptr; //freeing up the station
+		for (instruction *element : ADD_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
 					}
 
-		for (int i = 0; i < 2; i++)
-			if (BEQ_stations[i] != nullptr)
-				if (valid(BEQ_stations[i]))
-					if (BEQ_stations[i]->execute()) {
-						BEQ_stations[i]->writeback();
-						BEQ_stations[i] = nullptr; //freeing up the station
+		for (instruction *element : BEQ_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
 					}
 		for (instruction *element : LW_stations)
 			if (element != nullptr)
@@ -94,33 +94,33 @@ void SIM::simulate() {
 						element->writeback();
 						element = nullptr; //freeing up the station
 					}
-		for (int i = 0; i < 2; i++)
-			if (SW_stations[i] != nullptr)
-				if (valid(SW_stations[i]))
-					if (SW_stations[i]->execute()) {
-						SW_stations[i]->writeback();
-						SW_stations[i] = nullptr; //freeing up the station
+		for (instruction *element : SW_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
 					}
-		for (int i = 0; i < 3; i++)
-			if (JMP_stations[i] != nullptr)
-				if (valid(JMP_stations[i]))
-					if (JMP_stations[i]->execute()) {
-						JMP_stations[i]->writeback();
-						JMP_stations[i] = nullptr; //freeing up the station
+		for (instruction *element : JMP_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
 					}
-		for (int i = 0; i < 1; i++)
-			if (NAND_stations[i] != nullptr)
-				if (valid(NAND_stations[i]))
-					if (NAND_stations[i]->execute()) {
-						NAND_stations[i]->writeback();
-						NAND_stations[i] = nullptr; //freeing up the station
+		for (instruction *element : NAND_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
 					}
-		for (int i = 0; i < 2; i++)
-			if (MUL_stations[i] != nullptr)
-				if (valid(MUL_stations[i]))
-					if (MUL_stations[i]->execute()) {
-						MUL_stations[i]->writeback();
-						MUL_stations[i] = nullptr; //freeing up the station
+		for (instruction *element : MUL_stations)
+			if (element != nullptr)
+				if (valid(element))
+					if (element->execute()) {
+						element->writeback();
+						element = nullptr; //freeing up the station
 					}
 
 
