@@ -12,3 +12,9 @@ ADDI x3,x3,1
 ADDI x4,x4,1
 JMP -8
 ADD x0,x0,x0
+
+.data
+0x14:	3
+0x15:	12
+0x16:	-5
+0x17:	7
