@@ -39,6 +39,7 @@ inline void RET::issue()
 	}
 
 	sim_ptr->set_pc(return_address);
+	sim_ptr->flush_iq();
 
 	sim_ptr->fill_station(this);
 	sim_ptr->fill_RAT(this);
@@ -64,5 +65,9 @@ inline void RET::writeback()
 
 inline void RET::commit() 
 {
+	cycles = 2;
+	funcUnit = "JMP";
+	valid = true;
+	ready = 0;
 }
 #endif

@@ -54,6 +54,12 @@ void SIM::simulate() {
 	while (!program_finished) {
 
 		num_cycles++;
+
+		//DEBUG///
+		if (num_cycles == 20)
+			std::cout << "HOLA" << endl;
+		//////////
+
 		//Commit
 		if (!ROB.empty()) {
 			while (!ROB.empty() && ROB.front()->isReady()) {
@@ -85,54 +91,82 @@ void SIM::simulate() {
 		//Execute & Writeback
 		for (int i = 0; i < 3; i++)
 			if (ADD_stations[i] != nullptr)
-				if (valid(ADD_stations[i]))
+				if (valid(ADD_stations[i]) || ADD_stations[i]->executing())
+				{
+					ADD_stations[i]->start_ex();
 					if (ADD_stations[i]->execute()) {
 						ADD_stations[i]->writeback();
 						ADD_stations[i] = nullptr; //freeing up the station
+						ADD_stations[i]->stop_ex();
 					}
+				}
 
 		for (int i = 0; i < 2; i++)
 			if (BEQ_stations[i] != nullptr)
-				if (valid(BEQ_stations[i]))
+				if (valid(BEQ_stations[i]) || BEQ_stations[i]->executing())
+				{
+					BEQ_stations[i]->start_ex();
 					if (BEQ_stations[i]->execute()) {
 						BEQ_stations[i]->writeback();
 						BEQ_stations[i] = nullptr; //freeing up the station
+						BEQ_stations[i]->stop_ex();
 					}
+				}
 		for (int i = 0; i < 2; i++)
 			if (LW_stations[i] != nullptr)
-				if (valid(LW_stations[i]))
+				if (valid(LW_stations[i]) || LW_stations[i]->executing())
+				{
+					LW_stations[i]->start_ex();
 					if (LW_stations[i]->execute()) {
 						LW_stations[i]->writeback();
 						LW_stations[i] = nullptr; //freeing up the station
+						LW_stations[i]->stop_ex();
 					}
+				}
 		for (int i = 0; i < 2; i++)
 			if (SW_stations[i] != nullptr)
-				if (valid(SW_stations[i]))
+				if (valid(SW_stations[i]) || SW_stations[i]->executing())
+				{
+					SW_stations[i]->start_ex();
 					if (SW_stations[i]->execute()) {
 						SW_stations[i]->writeback();
 						SW_stations[i] = nullptr; //freeing up the station
+						SW_stations[i]->stop_ex();
 					}
+				}
 		for (int i = 0; i < 3; i++)
 			if (JMP_stations[i] != nullptr)
-				if (valid(JMP_stations[i]))
+				if (valid(JMP_stations[i]) || JMP_stations[i]->executing())
+				{
+					JMP_stations[i]->start_ex();
 					if (JMP_stations[i]->execute()) {
 						JMP_stations[i]->writeback();
 						JMP_stations[i] = nullptr; //freeing up the station
+						JMP_stations[i]->stop_ex();
 					}
+				}
 		for (int i = 0; i < 1; i++)
 			if (NAND_stations[i] != nullptr)
-				if (valid(NAND_stations[i]))
+				if (valid(NAND_stations[i]) || NAND_stations[i]->executing())
+				{
+					NAND_stations[i]->start_ex();
 					if (NAND_stations[i]->execute()) {
 						NAND_stations[i]->writeback();
 						NAND_stations[i] = nullptr; //freeing up the station
+						NAND_stations[i]->stop_ex();
 					}
+				}
 		for (int i = 0; i < 2; i++)
 			if (MUL_stations[i] != nullptr)
-				if (valid(MUL_stations[i]))
+				if (valid(MUL_stations[i]) || MUL_stations[i]->executing())
+				{
+					MUL_stations[i]->start_ex();
 					if (MUL_stations[i]->execute()) {
 						MUL_stations[i]->writeback();
 						MUL_stations[i] = nullptr; //freeing up the station
+						MUL_stations[i]->stop_ex();
 					}
+				}
 
 
 		//Issue
@@ -179,7 +213,7 @@ void SIM::simulate() {
 
 
 		//Fetch
-
+		if (pc >= last_read) all_read = true;
 		if (!all_read)
 		{
 			if (instq.size() == 4 || jmpstall) //checking for capacity
@@ -203,7 +237,6 @@ void SIM::simulate() {
 
 		pc = stall ? pc : pc + 2;
 		stall = false;
-		if (pc >= last_read) all_read = true;
 		loadstore = false;
 		jmpstall = false;
 		program_finished = instq.empty() && ROB.empty() && all_read;
@@ -484,7 +517,23 @@ bool SIM::valid(instruction *inst) {
 		}
 		else //if i-type
 		{
-			if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady()) return true;
+			if (inst->get_name() == "BEQ") //branches are i-type but act like r-type. they use operand 1 and 2 instead of 2 and 3 though.
+			{
+				if (RAT.readData(inst->get_operand2()) == nullptr)
+				{
+					if (RAT.readData(inst->get_operand1()) == nullptr || RAT.readData(inst->get_operand1())->isReady()) return true;
+				}
+				else if (RAT.readData(inst->get_operand2())->isReady())
+				{
+					if (RAT.readData(inst->get_operand1()) == nullptr || RAT.readData(inst->get_operand1())->isReady()) return true;
+				}
+				else if ((RAT.readData(inst->get_operand2()) == inst ||
+					RAT.readData(inst->get_operand1()) ||
+					RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID() ||
+					RAT.readData(inst->get_operand1())->get_ID() > inst->get_ID())
+					&& inst->ops_ready()) return true;
+			}
+			else if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady()) return true;
 			else  if (((RAT.readData(inst->get_operand2()) == inst) || 
 					   (RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID()))
 						&& inst->ops_ready()) return true;

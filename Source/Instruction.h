@@ -42,6 +42,7 @@ public:
 	void display() const;
 	bool isReady();
 	void start_ex();
+	void stop_ex();
 	bool executing();
 };
 #endif

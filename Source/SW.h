@@ -65,5 +65,9 @@ inline void SW::writeback()
 inline void SW::commit() 
 {
 	sim_ptr->datamem_wr(address, parameter1);
+	cycles = 2;
+	funcUnit = "SW";
+	valid[0] = valid[1] = true;
+	ready = 0;
 }
 #endif

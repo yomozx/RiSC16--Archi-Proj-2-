@@ -26,6 +26,11 @@ void instruction::start_ex()
 	started_ex = 1;
 }
 
+void instruction::stop_ex()
+{
+	started_ex = false;
+}
+
 bool instruction::executing()
 {
 	return started_ex;

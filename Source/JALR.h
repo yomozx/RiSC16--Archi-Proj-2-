@@ -40,6 +40,7 @@ inline void JALR::issue()
 
 	result = sim_ptr->get_pc() + 1;
 	sim_ptr->set_pc(parameter1);
+	sim_ptr->flush_iq();
 	
 	sim_ptr->fill_station(this);
 	sim_ptr->fill_RAT(this);
@@ -65,5 +66,9 @@ inline void JALR::writeback()
 inline void JALR::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
+	cycles = 2;
+	funcUnit = "JMP";
+	valid = true;
+	ready = 0;
 }
 #endif

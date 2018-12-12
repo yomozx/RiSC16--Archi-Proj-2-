@@ -52,6 +52,11 @@ inline void JMP::writeback()
 	ready = 1;
 }
 
-inline void JMP::commit() {}
+inline void JMP::commit() 
+{
+	cycles = 2;
+	funcUnit = "JMP";
+	ready = 0;
+}
 
 #endif

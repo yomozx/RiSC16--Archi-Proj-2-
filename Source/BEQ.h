@@ -94,7 +94,7 @@ inline bool BEQ::execute()
 		return true;
 	}
 	else
-		return true;
+		return false;
 	
 }
 
@@ -107,6 +107,10 @@ inline void BEQ::commit()
 {
 	if (!result)
 		sim_ptr->set_pc(oldPC);
+	cycles = 2;
+	funcUnit = "BEQ";
+	valid[0] = valid[1] = true;
+	ready = 0;
 }
 
 inline bool BEQ::ops_ready()

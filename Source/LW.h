@@ -62,6 +62,10 @@ inline void LW::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
+	cycles = 3;
+	funcUnit = "LW";
+	valid = true;
+	ready = 0;
 }
 
 #endif
