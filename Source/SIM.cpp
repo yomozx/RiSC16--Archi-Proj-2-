@@ -95,9 +95,9 @@ void SIM::simulate() {
 				{
 					ADD_stations[i]->start_ex();
 					if (ADD_stations[i]->execute()) {
+						ADD_stations[i]->stop_ex();
 						ADD_stations[i]->writeback();
 						ADD_stations[i] = nullptr; //freeing up the station
-						ADD_stations[i]->stop_ex();
 					}
 				}
 
@@ -107,9 +107,9 @@ void SIM::simulate() {
 				{
 					BEQ_stations[i]->start_ex();
 					if (BEQ_stations[i]->execute()) {
+						BEQ_stations[i]->stop_ex();
 						BEQ_stations[i]->writeback();
 						BEQ_stations[i] = nullptr; //freeing up the station
-						BEQ_stations[i]->stop_ex();
 					}
 				}
 		for (int i = 0; i < 2; i++)
@@ -118,9 +118,9 @@ void SIM::simulate() {
 				{
 					LW_stations[i]->start_ex();
 					if (LW_stations[i]->execute()) {
+						LW_stations[i]->stop_ex();
 						LW_stations[i]->writeback();
 						LW_stations[i] = nullptr; //freeing up the station
-						LW_stations[i]->stop_ex();
 					}
 				}
 		for (int i = 0; i < 2; i++)
@@ -129,9 +129,9 @@ void SIM::simulate() {
 				{
 					SW_stations[i]->start_ex();
 					if (SW_stations[i]->execute()) {
+						SW_stations[i]->stop_ex();
 						SW_stations[i]->writeback();
 						SW_stations[i] = nullptr; //freeing up the station
-						SW_stations[i]->stop_ex();
 					}
 				}
 		for (int i = 0; i < 3; i++)
@@ -140,9 +140,9 @@ void SIM::simulate() {
 				{
 					JMP_stations[i]->start_ex();
 					if (JMP_stations[i]->execute()) {
+						JMP_stations[i]->stop_ex();
 						JMP_stations[i]->writeback();
 						JMP_stations[i] = nullptr; //freeing up the station
-						JMP_stations[i]->stop_ex();
 					}
 				}
 		for (int i = 0; i < 1; i++)
@@ -151,9 +151,9 @@ void SIM::simulate() {
 				{
 					NAND_stations[i]->start_ex();
 					if (NAND_stations[i]->execute()) {
+						NAND_stations[i]->stop_ex();
 						NAND_stations[i]->writeback();
 						NAND_stations[i] = nullptr; //freeing up the station
-						NAND_stations[i]->stop_ex();
 					}
 				}
 		for (int i = 0; i < 2; i++)
@@ -162,9 +162,9 @@ void SIM::simulate() {
 				{
 					MUL_stations[i]->start_ex();
 					if (MUL_stations[i]->execute()) {
+						MUL_stations[i]->stop_ex();
 						MUL_stations[i]->writeback();
 						MUL_stations[i] = nullptr; //freeing up the station
-						MUL_stations[i]->stop_ex();
 					}
 				}
 

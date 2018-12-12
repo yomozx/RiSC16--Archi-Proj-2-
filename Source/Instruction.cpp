@@ -28,7 +28,7 @@ void instruction::start_ex()
 
 void instruction::stop_ex()
 {
-	started_ex = false;
+	started_ex = 0;
 }
 
 bool instruction::executing()
