@@ -22,20 +22,20 @@ SIM::SIM() : pc(0), last_read(0), data_memory(64 * 1024), registers(8), data_mem
              starting_address(0), instr_commits(0) {
 
     //initializing stations
-    for (instruction *element:ADD_stations)
-        element = nullptr;
-    for (instruction *element:BEQ_stations)
-        element = nullptr;
-    for (instruction *element:LW_stations)
-        element = nullptr;
-    for (instruction *element:SW_stations)
-        element = nullptr;
-    for (instruction *element:JMP_stations)
-        element = nullptr;
-    for (instruction *element:NAND_stations)
-        element = nullptr;
-    for (instruction *element:MUL_stations)
-        element = nullptr;
+    for (int i = 0; i<3; i++)
+        ADD_stations[i] = nullptr;
+    for (int i = 0; i<2; i++)
+        BEQ_stations[i] = nullptr;
+    for (int i = 0; i<2; i++)
+        LW_stations[i] = nullptr;
+    for (int i = 0; i<2; i++)
+        SW_stations[i] = nullptr;
+    for (int i = 0; i<3; i++)
+        JMP_stations[i] = nullptr;
+    for (int i = 0; i<1; i++)
+        NAND_stations[0] = nullptr;
+    for (int i = 0; i<2; i++)
+        MUL_stations[i] = nullptr;
 
 	for (int i = 0; i < 8; i++)
 		RAT[i] = nullptr;

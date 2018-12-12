@@ -33,7 +33,5 @@ int main() {
 		cout << s << endl;
 	}
 
-
-	system("pause");
 	return 0;
 }

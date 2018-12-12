@@ -19,8 +19,8 @@ private:
 	int branch_misses = 0;
 	bool stall = false;
 	bool flush = false;
-	memory<__int16> data_memory;
-	memory<__int16> registers;
+	memory<int> data_memory;
+	memory<int> registers;
 	bool valid_bits[8]; //array of validity bits for RAT
 	instruction* RAT[8];//register alias table (for renaming); points to most up to date source of data (rf or rob).
 	memory<instruction*> inst_memory;
