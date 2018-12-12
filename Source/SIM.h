@@ -2,6 +2,7 @@
 #define SIM_H
 #include "Memory.h"
 #include <queue>
+#include <deque>
 
 using namespace std;
 
@@ -25,7 +26,7 @@ private:
 	instruction* RAT[8];//register alias table (for renaming); points to most up to date source of data (rf or rob).
 	memory<instruction*> inst_memory;
 	queue<instruction*> instq; //size is 4 instructions
-	queue<instruction*> ROB;   //size is 6 instructions
+	deque<instruction*> ROB;   //size is 6 instructions
 	instruction* ADD_stations[3];
 	instruction* BEQ_stations[2];
 	instruction* LW_stations[2]; //load buffer

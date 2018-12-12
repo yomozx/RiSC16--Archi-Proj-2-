@@ -64,7 +64,7 @@ void SIM::simulate() {
 				if (!(ROB.front()->get_name() == "BEQ")) { // if not branch
 					ROB.front()->commit();
 					instr_commits++;
-					ROB.pop();
+					ROB.pop_front();
 				}
 				else { // if it's a branch
 					branches++;
@@ -76,7 +76,7 @@ void SIM::simulate() {
 						while (!instq.empty())
 							instq.pop();
 						while (!ROB.empty())
-							ROB.pop();
+							ROB.pop_front();
 						for (int i = 0; i<3; i++)
 							ADD_stations[i] = nullptr;
 						for (int i = 0; i<2; i++)
@@ -98,7 +98,7 @@ void SIM::simulate() {
 					else {//if it was correctly predicted
 						ROB.front()->commit();
 						instr_commits++;
-						ROB.pop();
+						ROB.pop_front();
 					}
 				}
 			}
@@ -401,9 +401,12 @@ void SIM::read_file() {
 
 bool SIM::CheckSWBuff(int address, int ID)
 {
-	for (int i = 0; i < 2; i++)
-		if (SW_stations[i] != nullptr && SW_stations[i]->get_result() == address && ID > SW_stations[i]->get_ID())
-			return false;
+	for(int i = 0; i < ROB.size(); i++)
+		{
+			if (ROB[i]->get_name() == "SW")
+				if( ROB[i]->get_result() == address && ID > SW_stations[i]->get_ID())
+					return false;
+		}
 	return true;
 }
 
@@ -702,7 +705,7 @@ void SIM::set_RAT(int addr, instruction *inst)
 
 
 void SIM::fill_ROB(instruction *inst) {
-    ROB.push(inst);
+    ROB.push_back(inst);
 }
 
 void SIM::fill_loadBuffer(instruction *inst) {
