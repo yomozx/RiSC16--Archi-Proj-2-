@@ -509,11 +509,9 @@ bool SIM::valid(instruction *inst) {
 			{
 				if( RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
 			}
-			else if (( RAT[inst->get_operand3()] != nullptr && RAT[inst->get_operand2()] == inst ||
-						RAT[inst->get_operand3()] || 
-						RAT[inst->get_operand2()]->get_ID() > inst->get_ID() || 
-						RAT[inst->get_operand3()]->get_ID() > inst->get_ID() )
-						&& inst->ops_ready()) return true;
+			else if ( (RAT[inst->get_operand2()] != nullptr && RAT[inst->get_operand3()] != nullptr) && (
+				     (RAT[inst->get_operand2()] == inst || RAT[inst->get_operand2()]->get_ID() > inst->get_ID()  ||
+					  RAT[inst->get_operand3()] == inst || RAT[inst->get_operand3()]->get_ID() > inst->get_ID() ) && inst->ops_ready() )) return true;
 		}
 		else //if i-type
 		{
