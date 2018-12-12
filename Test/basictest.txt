@@ -1,9 +1,10 @@
 .text
-ADD x2,x3,x4
-LW x1,x2,10
-SUB x1,x2,x3
-ADDI x7,x5,-3
-NAND x5,x4,x2
+ADDI x2,x0,5
+ADDI x3,x0,10
+LW x1,x0,10
+SUB x4,x1,x2
+MUL x5,x2,x3
+NAND x6,x4,x2
 
 .data
 0x00:	20
