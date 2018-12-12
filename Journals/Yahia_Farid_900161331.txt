@@ -20,5 +20,23 @@ Finalized functions for milestone 1.
 December 4, 9:53pm:
 Wrote test cases that will be used for simulation.
 
+December 7, 3:00pm:
+Met up with team members in order to finalize design and split tasks
+for MS2.
+
+December 7, 1:28am:
+Edited instruction classes and added function headers to be filled
+by other team members.
+
+December 10, ~11:00pm:
+Went through code, adding minor details and finalizing project.
+
+December 11, 6:30am:
+Tested out all test cases and made sure all of them were working.
+
+December 12, 7:00pm:
+Ran one of the test cases and took snapshots, explaining everything
+that happens every cycle.
+
 
 
