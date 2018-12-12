@@ -1,4 +1,4 @@
-﻿Team:
+Team:
 Laila Nasser ElKoussy (lailanelkoussy@aucegypt.edu 900160812)
 Yahia Khaled Farid (yahiafarid@aucegypt.edu 900161331)
 Yousef Mohab Koura (yomozx@aucegypt.edu 900160083)
@@ -10,8 +10,12 @@ Our Simulator:
 • Instructions have format: instruction_name param1,param2,param3
 • In the input.txt file, any block of instructions needs to be preceded by .text
 and any block of data by .data, there can be several blocks of instructions and data
-• Currently, our simulator merely takes the input and displays the values at the 
-relevant instruction memory addresses to confirm that the input has been correctly
-received (validation is included).
-• Basis for the next milestone was laid out (class hierarchy made to accommodate
-future implementation).
+
+Functional units and execution times: 
+• 2 LW units (2 cycles) 
+• 2 SW units (2 cycles)
+• 3 JMP/JALR/RET units (1 cycle)
+• 2 BEQ units (1 cycle) 
+• 3 ADD/SUB/ADDI units (2 cycles)
+• 1 NAND unit (1 cycle) 
+• 2 MULT units (8 cycles) 

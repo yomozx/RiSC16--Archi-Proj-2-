@@ -39,7 +39,7 @@ Wednesday December 12th all day:
 Discovered more cornercases and made sure that our sim 
 was functional under all our testcases.
 
-Wednesday December 12th 00:00pm:
+Wednesday December 12th 11:17pm:
 Finalized directories, ready to submit.
 
 

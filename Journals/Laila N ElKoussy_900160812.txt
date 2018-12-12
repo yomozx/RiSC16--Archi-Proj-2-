@@ -1,0 +1,27 @@
+Tuesday 4th of December 2:15 PM:
+Sitting with the boys discussing the design of the classes. Will start working
+on report after. 
+
+Tuesday 4th of December 11:11 PM:
+Finished the report. Gonna write the readme.txt then send it to Youssef. 
+
+Saturday 8th of December 5:23 PM: 
+Calling Youssef to discuss project and task division. 
+
+Saturday 8th of December 6:24 PM: 
+Gonna start working on the general flow of the simulator. 
+
+Saturday 8th of December 9:46 PM: 
+Worked on the simulate function. Pushed it so that Youssef can see it and so we can figure out the speculation. 
+
+Saturday 8th of December 10:08 PM: 
+Youssef looked at code. Will start implementing speculation. 
+
+Saturday 8th of December 10:23 PM:
+Added speculation and pushed the code. Done for today. 
+
+Wednesday 12th of December 9:39 PM: 
+Have been working on the report throughout the day, still am. 
+
+Wednesday 12th of December 11:00 PM: 
+Finished the report. Will send to Youssef. 
