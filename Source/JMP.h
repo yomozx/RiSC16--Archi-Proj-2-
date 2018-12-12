@@ -25,7 +25,6 @@ inline JMP::JMP(SIM* ptr) {
 inline void JMP::issue() 
 {
 	sim_ptr->fill_station(this);
-    sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
 	immediate = operand1;

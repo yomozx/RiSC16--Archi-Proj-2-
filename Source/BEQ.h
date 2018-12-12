@@ -53,7 +53,6 @@ inline void BEQ::issue()
 	}
 
 	sim_ptr->fill_station(this);
-    sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
 
 	mypc = sim_ptr->get_startingAddr() + this->get_ID();
@@ -106,7 +105,8 @@ inline void BEQ::writeback()
 inline void BEQ::commit() 
 {
 	if (!result)
-		sim_ptr->set_pc(oldPC);
+		if(taken) sim_ptr->set_pc(oldPC);
+		else sim_ptr->set_pc(address);
 	cycles = 2;
 	funcUnit = "BEQ";
 	valid[0] = valid[1] = true;

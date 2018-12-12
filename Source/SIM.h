@@ -15,8 +15,8 @@ private:
 	int starting_address;
 	int num_cycles;
 	int instr_commits;
-	int branches;
-	int branch_misses;
+	int branches = 0;
+	int branch_misses = 0;
 	bool stall = false;
 	bool flush = false;
 	memory<__int16> data_memory;

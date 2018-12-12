@@ -55,11 +55,6 @@ void SIM::simulate() {
 
 		num_cycles++;
 
-		//DEBUG///
-		if (num_cycles == 20)
-			std::cout << "HOLA" << endl;
-		//////////
-
 		//Commit
 		if (!ROB.empty()) {
 			while (!ROB.empty() && ROB.front()->isReady()) {
@@ -211,9 +206,9 @@ void SIM::simulate() {
 			}
 		}
 
-
 		//Fetch
 		if (pc >= last_read) all_read = true;
+		else all_read = false;
 		if (!all_read)
 		{
 			if (instq.size() == 4 || jmpstall) //checking for capacity
@@ -247,7 +242,7 @@ void SIM::simulate() {
 	registers.Display();
 	cout << "Cycles Elapsed: " << dec << num_cycles << endl;
 	cout << "IPC: "  << float(instr_commits) / num_cycles << endl;
-	if (branches > 0) cout << "Branch Miss (%): " << (branch_misses / branches) * 100;
+	if (branches > 0) cout << "Branch Miss (%): " << ((float)branch_misses / branches) * 100 << "%" << endl;
 }
 
 void SIM::read_file() {
