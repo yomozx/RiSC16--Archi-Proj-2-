@@ -20,7 +20,7 @@ public:
 };
 
 inline MUL::MUL(SIM* ptr) {
-	cycles = 9;
+	cycles = 8;
 	funcUnit = "MUL";
 	valid[0] = valid[1] = true;
 	sim_ptr = ptr;
@@ -79,10 +79,11 @@ inline void MUL::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
-	cycles = 9;
+	cycles = 8;
 	funcUnit = "MUL";
 	valid[0] = valid[1] = true;
 	ready = 0;
+	finished_ex = 0;
 }
 
 inline bool MUL::ops_ready()

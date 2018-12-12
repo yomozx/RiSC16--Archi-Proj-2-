@@ -72,10 +72,28 @@ void SIM::simulate() {
 						ROB.front()->commit();
 						branch_misses++;
 						instr_commits++;
+
 						while (!instq.empty())
 							instq.pop();
 						while (!ROB.empty())
 							ROB.pop();
+						for (int i = 0; i<3; i++)
+							ADD_stations[i] = nullptr;
+						for (int i = 0; i<2; i++)
+							BEQ_stations[i] = nullptr;
+						for (int i = 0; i<2; i++)
+							LW_stations[i] = nullptr;
+						for (int i = 0; i<2; i++)
+							SW_stations[i] = nullptr;
+						for (int i = 0; i<3; i++)
+							JMP_stations[i] = nullptr;
+						for (int i = 0; i<1; i++)
+							NAND_stations[0] = nullptr;
+						for (int i = 0; i<2; i++)
+							MUL_stations[i] = nullptr;
+
+						for (int i = 0; i < 8; i++)
+							RAT[i] = nullptr;
 					}
 					else {//if it was correctly predicted
 						ROB.front()->commit();
@@ -86,7 +104,60 @@ void SIM::simulate() {
 			}
 		}
 
-		//Execute & Writeback
+
+		//Writeback
+		for (int i = 0; i < 3; i++)
+			if (ADD_stations[i] != nullptr)
+				if (ADD_stations[i]->nexecuting())
+				{
+						ADD_stations[i]->writeback();
+						ADD_stations[i] = nullptr; //freeing up the station
+				}
+
+		for (int i = 0; i < 2; i++)
+			if (BEQ_stations[i] != nullptr)
+				if (BEQ_stations[i]->nexecuting())
+				{
+						BEQ_stations[i]->writeback();
+						BEQ_stations[i] = nullptr; //freeing up the station
+				}
+		for (int i = 0; i < 2; i++)
+			if (LW_stations[i] != nullptr)
+				if (LW_stations[i]->nexecuting())
+				{
+						LW_stations[i]->writeback();
+						LW_stations[i] = nullptr; //freeing up the station
+				}
+		for (int i = 0; i < 2; i++)
+			if (SW_stations[i] != nullptr)
+				if (SW_stations[i]->nexecuting())
+				{
+						SW_stations[i]->writeback();
+						SW_stations[i] = nullptr; //freeing up the station
+				}
+		for (int i = 0; i < 3; i++)
+			if (JMP_stations[i] != nullptr)
+				if (JMP_stations[i]->nexecuting())
+				{
+						JMP_stations[i]->writeback();
+						JMP_stations[i] = nullptr; //freeing up the station
+				}
+		for (int i = 0; i < 1; i++)
+			if (NAND_stations[i] != nullptr)
+				if (NAND_stations[i]->nexecuting())
+				{
+						NAND_stations[i]->writeback();
+						NAND_stations[i] = nullptr; //freeing up the station
+				}
+		for (int i = 0; i < 2; i++)
+			if (MUL_stations[i] != nullptr)
+				if (MUL_stations[i]->nexecuting())
+				{
+						MUL_stations[i]->writeback();
+						MUL_stations[i] = nullptr; //freeing up the station
+				}
+
+		//Execute
 		for (int i = 0; i < 3; i++)
 			if (ADD_stations[i] != nullptr)
 				if (valid(ADD_stations[i]) || ADD_stations[i]->executing())
@@ -94,8 +165,6 @@ void SIM::simulate() {
 					ADD_stations[i]->start_ex();
 					if (ADD_stations[i]->execute()) {
 						ADD_stations[i]->stop_ex();
-						ADD_stations[i]->writeback();
-						ADD_stations[i] = nullptr; //freeing up the station
 					}
 				}
 
@@ -106,8 +175,6 @@ void SIM::simulate() {
 					BEQ_stations[i]->start_ex();
 					if (BEQ_stations[i]->execute()) {
 						BEQ_stations[i]->stop_ex();
-						BEQ_stations[i]->writeback();
-						BEQ_stations[i] = nullptr; //freeing up the station
 					}
 				}
 		for (int i = 0; i < 2; i++)
@@ -117,8 +184,6 @@ void SIM::simulate() {
 					LW_stations[i]->start_ex();
 					if (LW_stations[i]->execute()) {
 						LW_stations[i]->stop_ex();
-						LW_stations[i]->writeback();
-						LW_stations[i] = nullptr; //freeing up the station
 					}
 				}
 		for (int i = 0; i < 2; i++)
@@ -128,8 +193,6 @@ void SIM::simulate() {
 					SW_stations[i]->start_ex();
 					if (SW_stations[i]->execute()) {
 						SW_stations[i]->stop_ex();
-						SW_stations[i]->writeback();
-						SW_stations[i] = nullptr; //freeing up the station
 					}
 				}
 		for (int i = 0; i < 3; i++)
@@ -139,8 +202,6 @@ void SIM::simulate() {
 					JMP_stations[i]->start_ex();
 					if (JMP_stations[i]->execute()) {
 						JMP_stations[i]->stop_ex();
-						JMP_stations[i]->writeback();
-						JMP_stations[i] = nullptr; //freeing up the station
 					}
 				}
 		for (int i = 0; i < 1; i++)
@@ -150,8 +211,6 @@ void SIM::simulate() {
 					NAND_stations[i]->start_ex();
 					if (NAND_stations[i]->execute()) {
 						NAND_stations[i]->stop_ex();
-						NAND_stations[i]->writeback();
-						NAND_stations[i] = nullptr; //freeing up the station
 					}
 				}
 		for (int i = 0; i < 2; i++)
@@ -161,8 +220,6 @@ void SIM::simulate() {
 					MUL_stations[i]->start_ex();
 					if (MUL_stations[i]->execute()) {
 						MUL_stations[i]->stop_ex();
-						MUL_stations[i]->writeback();
-						MUL_stations[i] = nullptr; //freeing up the station
 					}
 				}
 
@@ -503,15 +560,22 @@ bool SIM::valid(instruction *inst) {
 		{
 			if(RAT[inst->get_operand2()] == nullptr)
 			{
-				if( RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
+				if (RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
+				else if (((RAT[inst->get_operand3()] != nullptr && (RAT[inst->get_operand3()] == inst || RAT[inst->get_operand3()]->get_ID() > inst->get_ID())) && inst->ops_ready()))
+					return true;
 			}
 			else if (RAT[inst->get_operand2()]->isReady())
 			{
 				if( RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
+				else if (((RAT[inst->get_operand3()] != nullptr && (RAT[inst->get_operand3()] == inst || RAT[inst->get_operand3()]->get_ID() > inst->get_ID())) && inst->ops_ready()))
+					return true;
 			}
-			else if ( (RAT[inst->get_operand2()] != nullptr && RAT[inst->get_operand3()] != nullptr) && (
-				     (RAT[inst->get_operand2()] == inst || RAT[inst->get_operand2()]->get_ID() > inst->get_ID()  ||
-					  RAT[inst->get_operand3()] == inst || RAT[inst->get_operand3()]->get_ID() > inst->get_ID() ) && inst->ops_ready() )) return true;
+			else if ((RAT[inst->get_operand2()] != nullptr && (RAT[inst->get_operand2()] == inst || RAT[inst->get_operand2()]->get_ID() > inst->get_ID())) && inst->ops_ready())
+			{
+				if (RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
+				else if (((RAT[inst->get_operand3()] != nullptr && (RAT[inst->get_operand3()] == inst || RAT[inst->get_operand3()]->get_ID() > inst->get_ID())) && inst->ops_ready()))
+					return true;
+			}
 		}
 		else //if i-type
 		{

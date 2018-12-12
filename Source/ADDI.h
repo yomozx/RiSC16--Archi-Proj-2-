@@ -20,7 +20,7 @@ public:
 };
 
 inline ADDI::ADDI(SIM* ptr) {
-	cycles = 3;
+	cycles = 2;
 	funcUnit = "ADD";
 	valid = true;
 	sim_ptr = ptr;
@@ -69,10 +69,11 @@ inline void ADDI::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
-	cycles = 3;
+	cycles = 2;
 	funcUnit = "ADD";
 	valid = true;
 	ready = 0;
+	finished_ex = 0;
 }
 
 inline bool ADDI::ops_ready()

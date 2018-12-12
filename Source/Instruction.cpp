@@ -7,7 +7,7 @@ using namespace std;
 SIM* instruction::sim_ptr = nullptr;
 
 instruction::instruction() : instruction_name(""), operand1(-1),
-	operand2(-1), operand3(-1), whole_instruction(""), ready(0), ID(-1) {}
+	operand2(-1), operand3(-1), whole_instruction(""), ready(0), finished_ex(0), ID(-1) {}
 
 instruction::~instruction() {};
 
@@ -29,11 +29,18 @@ void instruction::start_ex()
 void instruction::stop_ex()
 {
 	started_ex = 0;
+	finished_ex = 1;
 }
 
 bool instruction::executing()
 {
 	return started_ex;
+}
+
+bool instruction::nexecuting()
+{
+	if (finished_ex) return true;
+	else return false;
 }
 
 string instruction::get_name() {

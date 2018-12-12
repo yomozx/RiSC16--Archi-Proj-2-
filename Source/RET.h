@@ -19,7 +19,7 @@ public:
 };
 
 inline RET::RET(SIM* ptr) {
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "JMP";
 	valid = true;
 	sim_ptr = ptr;
@@ -64,9 +64,10 @@ inline void RET::writeback()
 
 inline void RET::commit() 
 {
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "JMP";
 	valid = true;
 	ready = 0;
+	finished_ex = 0;
 }
 #endif

@@ -22,7 +22,7 @@ public:
 };
 
 inline BEQ::BEQ(SIM* ptr) {
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "BEQ";
 	valid[0] = valid[1] = true;
 	sim_ptr = ptr;
@@ -107,10 +107,11 @@ inline void BEQ::commit()
 	if (!result)
 		if(taken) sim_ptr->set_pc(oldPC);
 		else sim_ptr->set_pc(address);
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "BEQ";
 	valid[0] = valid[1] = true;
 	ready = 0;
+	finished_ex = 0;
 }
 
 inline bool BEQ::ops_ready()

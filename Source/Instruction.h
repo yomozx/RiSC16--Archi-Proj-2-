@@ -16,6 +16,7 @@ protected:
 	int operand3;
 	int cycles;
 	bool ready;
+	bool finished_ex;
 	bool started_ex;
 	string funcUnit;
 	static SIM *sim_ptr;
@@ -44,5 +45,6 @@ public:
 	void start_ex();
 	void stop_ex();
 	bool executing();
+	bool nexecuting();
 };
 #endif

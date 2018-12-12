@@ -20,7 +20,7 @@ public:
 };
 
 inline JALR::JALR(SIM* ptr) {
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "JMP";
 	valid = true;
 	sim_ptr = ptr;
@@ -69,9 +69,10 @@ inline void JALR::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
 	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "JMP";
 	valid = true;
 	ready = 0;
+	finished_ex = 0;
 }
 #endif

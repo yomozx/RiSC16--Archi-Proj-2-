@@ -17,7 +17,7 @@ public:
 };
 
 inline JMP::JMP(SIM* ptr) {
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "JMP";
 	sim_ptr = ptr;
 }
@@ -53,9 +53,10 @@ inline void JMP::writeback()
 
 inline void JMP::commit() 
 {
-	cycles = 2;
+	cycles = 1;
 	funcUnit = "JMP";
 	ready = 0;
+	finished_ex = 0;
 }
 
 #endif
