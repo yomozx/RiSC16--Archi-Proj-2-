@@ -18,5 +18,28 @@ Combined the pieces made by each member to make the
 full C++ project and run it.
 
 Tuesday December 4th 11:20pm:
-Collected everything in a directory. Read to submit.
+Collected everything in a directory. Ready to submit.
+
+Friday December 7th 3:00pm:
+Met up with team members to come up with a more solid design.
+Split up tasks.
+
+Saturday December 8th 5:00pm:
+Started reading about the algorithm and hardware in more detail to come up
+with a design outline with detailed stages. 
+Passed outline to Laila, so that she could start implementation.
+
+Monday December 10th all day:
+Added minor details to finalize project design and started testing.
+
+Tuesday December 11th all day until Dec 12th 7:00 am:
+Continued testing, discovering cornercase, and modifiying code accordingly.
+
+Wednesday December 12th all day:
+Discovered more cornercases and made sure that our sim 
+was functional under all our testcases.
+
+Wednesday December 12th 00:00pm:
+Finalized directories, ready to submit.
+
 
