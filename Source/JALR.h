@@ -9,6 +9,7 @@ private:
 	int parameter1;
 	instruction* p;
 	bool valid;
+	int mypc;
 public:
 	JALR(SIM*);
 	void issue();
@@ -38,10 +39,11 @@ inline void JALR::issue()
 		}
 	}
 
-	result = sim_ptr->get_pc() + 1;
+	mypc = sim_ptr->get_startingAddr() + this->get_ID();
+	result = mypc + 1;
 	sim_ptr->set_pc(parameter1);
 	sim_ptr->flush_iq();
-	
+
 	sim_ptr->fill_station(this);
 	sim_ptr->fill_RAT(this);
 	sim_ptr->fill_ROB(this);
@@ -66,6 +68,7 @@ inline void JALR::writeback()
 inline void JALR::commit()
 {
 	sim_ptr->rf_wr(operand1, result);
+	if (sim_ptr->get_RAT(operand1) == this) sim_ptr->set_RAT(operand1, nullptr);
 	cycles = 2;
 	funcUnit = "JMP";
 	valid = true;

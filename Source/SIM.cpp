@@ -486,6 +486,8 @@ bool SIM::dependent(instruction *one, instruction *two) {
 
 bool SIM::valid(instruction *inst) {
 
+	if (inst == nullptr) return false;
+
     if (inst->number_operands() == 1)
 	    if (inst->get_name() == "JMP" || RAT[inst->get_operand1()] == nullptr || (RAT[inst->get_operand1()]->isReady())) 
 			return true;
@@ -507,7 +509,7 @@ bool SIM::valid(instruction *inst) {
 			{
 				if( RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
 			}
-			else if ((	RAT[inst->get_operand2()] == inst || 
+			else if (( RAT[inst->get_operand3()] != nullptr && RAT[inst->get_operand2()] == inst ||
 						RAT[inst->get_operand3()] || 
 						RAT[inst->get_operand2()]->get_ID() > inst->get_ID() || 
 						RAT[inst->get_operand3()]->get_ID() > inst->get_ID() )
@@ -525,7 +527,7 @@ bool SIM::valid(instruction *inst) {
 				{
 					if (RAT[inst->get_operand1()] == nullptr || RAT[inst->get_operand1()]->isReady()) return true;
 				}
-				else if ((RAT[inst->get_operand2()] == inst ||
+				else if (RAT[inst->get_operand1()] != nullptr && (RAT[inst->get_operand2()] == inst ||
 					RAT[inst->get_operand1()] ||
 					RAT[inst->get_operand2()]->get_ID() > inst->get_ID() ||
 					RAT[inst->get_operand1()]->get_ID() > inst->get_ID())

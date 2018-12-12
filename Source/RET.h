@@ -27,14 +27,14 @@ inline RET::RET(SIM* ptr) {
 
 inline void RET::issue()
 {
-	if (sim_ptr->get_RAT(operand2) == nullptr) return_address = sim_ptr->rf_rd(operand2);
+	if (sim_ptr->get_RAT(operand1) == nullptr) return_address = sim_ptr->rf_rd(operand1);
 	else
 	{
-		if (sim_ptr->get_RAT(operand2)->isReady()) return_address = sim_ptr->get_RAT(operand2)->get_result();
+		if (sim_ptr->get_RAT(operand1)->isReady()) return_address = sim_ptr->get_RAT(operand1)->get_result();
 		else
 		{
 			valid = false;
-			p = sim_ptr->get_RAT(operand2);
+			p = sim_ptr->get_RAT(operand1);
 		}
 	}
 

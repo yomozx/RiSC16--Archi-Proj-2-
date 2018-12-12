@@ -10,5 +10,3 @@ ADDI x1,x0,30
 ADDI x2,x0,50
 RET x7
 ADDI x6,x0,1
-
-.data
