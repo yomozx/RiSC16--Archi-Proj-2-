@@ -36,6 +36,9 @@ SIM::SIM() : pc(0), last_read(0), data_memory(64 * 1024), registers(8), data_mem
         element = nullptr;
     for (instruction *element:MUL_stations)
         element = nullptr;
+
+	for (int i = 0; i < 8; i++)
+		RAT[i] = nullptr;
 }
 
 SIM::~SIM() {}
@@ -484,53 +487,53 @@ bool SIM::dependent(instruction *one, instruction *two) {
 bool SIM::valid(instruction *inst) {
 
     if (inst->number_operands() == 1)
-	    if (inst->get_name() == "JMP" || RAT.readData(inst->get_operand1()) == nullptr || (RAT.readData(inst->get_operand1())->isReady())) 
+	    if (inst->get_name() == "JMP" || RAT[inst->get_operand1()] == nullptr || (RAT[inst->get_operand1()]->isReady())) 
 			return true;
 
     if (inst->number_operands() == 2)
-        if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady())
+        if (RAT[inst->get_operand2()] == nullptr || RAT[inst->get_operand2()]->isReady())
             return true;
-		else if ((RAT.readData(inst->get_operand2()) == inst) && inst->ops_ready() || (RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID())) return true;
+		else if ((RAT[inst->get_operand2()] == inst) && inst->ops_ready() || (RAT[inst->get_operand2()]->get_ID() > inst->get_ID())) return true;
 
 	if (inst->number_operands() == 3 )
 	{
 		if (rtype(inst))
 		{
-			if(RAT.readData(inst->get_operand2()) == nullptr)
+			if(RAT[inst->get_operand2()] == nullptr)
 			{
-				if( RAT.readData(inst->get_operand3()) == nullptr || RAT.readData(inst->get_operand3())->isReady()) return true;
+				if( RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
 			}
-			else if (RAT.readData(inst->get_operand2())->isReady())
+			else if (RAT[inst->get_operand2()]->isReady())
 			{
-				if( RAT.readData(inst->get_operand3()) == nullptr || RAT.readData(inst->get_operand3())->isReady()) return true;
+				if( RAT[inst->get_operand3()] == nullptr || RAT[inst->get_operand3()]->isReady()) return true;
 			}
-			else if ((	RAT.readData(inst->get_operand2()) == inst || 
-						RAT.readData(inst->get_operand3()) || 
-						RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID() || 
-						RAT.readData(inst->get_operand3())->get_ID() > inst->get_ID() )
+			else if ((	RAT[inst->get_operand2()] == inst || 
+						RAT[inst->get_operand3()] || 
+						RAT[inst->get_operand2()]->get_ID() > inst->get_ID() || 
+						RAT[inst->get_operand3()]->get_ID() > inst->get_ID() )
 						&& inst->ops_ready()) return true;
 		}
 		else //if i-type
 		{
 			if (inst->get_name() == "BEQ") //branches are i-type but act like r-type. they use operand 1 and 2 instead of 2 and 3 though.
 			{
-				if (RAT.readData(inst->get_operand2()) == nullptr)
+				if (RAT[inst->get_operand2()] == nullptr)
 				{
-					if (RAT.readData(inst->get_operand1()) == nullptr || RAT.readData(inst->get_operand1())->isReady()) return true;
+					if (RAT[inst->get_operand1()] == nullptr || RAT[inst->get_operand1()]->isReady()) return true;
 				}
-				else if (RAT.readData(inst->get_operand2())->isReady())
+				else if (RAT[inst->get_operand2()]->isReady())
 				{
-					if (RAT.readData(inst->get_operand1()) == nullptr || RAT.readData(inst->get_operand1())->isReady()) return true;
+					if (RAT[inst->get_operand1()] == nullptr || RAT[inst->get_operand1()]->isReady()) return true;
 				}
-				else if ((RAT.readData(inst->get_operand2()) == inst ||
-					RAT.readData(inst->get_operand1()) ||
-					RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID() ||
-					RAT.readData(inst->get_operand1())->get_ID() > inst->get_ID())
+				else if ((RAT[inst->get_operand2()] == inst ||
+					RAT[inst->get_operand1()] ||
+					RAT[inst->get_operand2()]->get_ID() > inst->get_ID() ||
+					RAT[inst->get_operand1()]->get_ID() > inst->get_ID())
 					&& inst->ops_ready()) return true;
 			}
-			else if (RAT.readData(inst->get_operand2()) == nullptr || RAT.readData(inst->get_operand2())->isReady()) return true;
-			else  if (((RAT.readData(inst->get_operand2()) == inst) || 
-					   (RAT.readData(inst->get_operand2())->get_ID() > inst->get_ID()))
+			else if (RAT[inst->get_operand2()] == nullptr || RAT[inst->get_operand2()]->isReady()) return true;
+			else  if (((RAT[inst->get_operand2()] == inst) || 
+					   (RAT[inst->get_operand2()]->get_ID() > inst->get_ID()))
 						&& inst->ops_ready()) return true;
 		}
 	}
@@ -619,18 +622,18 @@ void SIM::fill_station(instruction *inst) {
 void SIM::fill_RAT(instruction *inst) {
 
     RAT_invalidate(inst->get_operand1());
-    RAT.storeData(inst->get_operand1(), inst);
+	RAT[inst->get_operand1()] = inst;
 
 }
 
 instruction* SIM::get_RAT(int addr)
 {
-	return RAT.readData(addr);
+	return RAT[addr];
 }
 
 void SIM::set_RAT(int addr, instruction *inst)
 {
-	RAT.storeData(addr, inst);
+	RAT[addr] = inst;
 }
 
 
